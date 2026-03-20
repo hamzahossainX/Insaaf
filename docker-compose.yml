@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    container_name: insaaf-erp-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: insaaf
+      POSTGRES_PASSWORD: insaaf
+      POSTGRES_DB: insaaf_erp
+    ports:
+      - "5432:5432"
+    volumes:
+      - insaaf_pgdata:/var/lib/postgresql/data
+
+volumes:
+  insaaf_pgdata:
