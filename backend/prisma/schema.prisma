@@ -1,0 +1,390 @@
+// Insaaf ERP — Shared Foundation + Insaaf Oxygen wing
+// This schema is written to merge cleanly with Insaaf LPG / Insaaf Retail later.
+// Golden rule: current_stock_qty, current_due_balance, current_balance are ALWAYS
+// derived from ledger tables inside a DB transaction. No route writes them directly.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl is the non-pooled Neon connection used only for `prisma migrate`.
+  // Vercel/serverless runtime uses DATABASE_URL (pooler) for all queries.
+  directUrl = env("DIRECT_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Shared Foundation (Section 0) — identical across all wings
+// ---------------------------------------------------------------------------
+
+enum WingName {
+  INSAAF_LPG
+  INSAAF_OXYGEN
+  INSAAF_RETAIL
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum AccountLedgerType {
+  IN
+  OUT
+  TRANSFER
+}
+
+enum IncrementType {
+  ONE_TIME_BONUS
+  PERMANENT_RAISE
+}
+
+model Wing {
+  id       String   @id @default(uuid())
+  name     WingName @unique
+  users    User[]
+  products Product[]
+  sales    Sale[]
+  expenses Expense[]
+  employees Employee[]
+
+  @@map("wings")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  phone         String   @unique
+  email         String?  @unique
+  password_hash String
+  role          Role
+  wing_id       String?
+  wing          Wing?    @relation(fields: [wing_id], references: [id])
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+
+  audit_logs    AuditLog[]
+  sales         Sale[]
+  due_payments  DuePayment[]
+  expenses      Expense[]
+  employee_loans_recorded EmployeeLoan[]
+  employee_loan_repayments_recorded EmployeeLoanRepayment[]
+
+  @@map("users")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  action     String   // CREATE | UPDATE | DELETE
+  entity     String
+  entity_id  String
+  timestamp  DateTime @default(now())
+  diff       Json?
+
+  @@map("audit_logs")
+}
+
+model Customer {
+  id                  String   @id @default(uuid())
+  name                String
+  phone               String
+  address             String?
+  notes               String?
+  current_due_balance Decimal  @default(0) @db.Decimal(14, 2) // DERIVED — never write directly
+  is_deleted          Boolean  @default(false) // soft-delete; Admin only
+  created_at          DateTime @default(now())
+
+  sales          Sale[]
+  cylinder_loans CylinderLoan[]
+  cylinder_returns CylinderReturn[]
+  due_payments   DuePayment[]
+
+  @@map("customers")
+}
+
+model Account {
+  id              String   @id @default(uuid())
+  name            String
+  type            String   // Cash | Bank | bKash | ...
+  current_balance Decimal  @default(0) @db.Decimal(14, 2) // DERIVED — never write directly
+  is_active       Boolean  @default(true) // soft-delete/deactivate; Admin only
+
+  ledger_entries  AccountLedgerEntry[]
+  sales_paid_now  Sale[]              @relation("sale_paid_into_account")
+  due_payments    DuePayment[]
+  expenses        Expense[]
+  salary_advances SalaryAdvance[]
+  payroll_payments PayrollPayment[]
+  employee_loans_given EmployeeLoan[]
+  employee_loan_repayments_received EmployeeLoanRepayment[]
+
+  @@map("accounts")
+}
+
+model AccountLedgerEntry {
+  id                String            @id @default(uuid())
+  account_id        String
+  account           Account           @relation(fields: [account_id], references: [id])
+  date              DateTime          @default(now())
+  type              AccountLedgerType
+  amount            Decimal           @db.Decimal(14, 2)
+  reference_type    String            // SALE | DUE_PAYMENT | EXPENSE | PAYROLL | TRANSFER | SALARY_ADVANCE
+  reference_id      String
+  resulting_balance Decimal           @db.Decimal(14, 2)
+
+  @@map("account_ledger_entries")
+}
+
+model Expense {
+  id                  String   @id @default(uuid())
+  category            String
+  amount              Decimal  @db.Decimal(14, 2)
+  date                DateTime @default(now())
+  paid_from_account_id String
+  paid_from_account   Account  @relation(fields: [paid_from_account_id], references: [id])
+  wing_id             String?
+  wing                Wing?    @relation(fields: [wing_id], references: [id])
+  note                String?
+  attachment_url      String?
+  is_deleted          Boolean  @default(false) // soft-delete; a reversal AccountLedgerEntry is written alongside
+  user_id             String
+  user                User     @relation(fields: [user_id], references: [id])
+
+  @@map("expenses")
+}
+
+model Employee {
+  id           String   @id @default(uuid())
+  name         String
+  role         String
+  wing_id      String
+  wing         Wing     @relation(fields: [wing_id], references: [id])
+  base_salary  Decimal  @db.Decimal(14, 2)
+  join_date    DateTime
+  is_active    Boolean  @default(true)
+
+  advances     SalaryAdvance[]
+  increments   SalaryIncrement[]
+  payroll      PayrollPayment[]
+  loans        EmployeeLoan[]
+  loan_repayments EmployeeLoanRepayment[]
+  deliveries   Sale[]
+
+  @@map("employees")
+}
+
+model SalaryAdvance {
+  id                    String   @id @default(uuid())
+  employee_id           String
+  employee              Employee @relation(fields: [employee_id], references: [id])
+  amount                Decimal  @db.Decimal(14, 2)
+  date                  DateTime @default(now())
+  paid_from_account_id  String
+  paid_from_account     Account  @relation(fields: [paid_from_account_id], references: [id])
+  month_applied_to      String   // "YYYY-MM"
+
+  @@map("salary_advances")
+}
+
+model SalaryIncrement {
+  id                    String        @id @default(uuid())
+  employee_id           String
+  employee              Employee      @relation(fields: [employee_id], references: [id])
+  type                  IncrementType
+  amount_or_new_base    Decimal       @db.Decimal(14, 2)
+  effective_month       String        // "YYYY-MM"
+  note                  String?
+
+  @@map("salary_increments")
+}
+
+model PayrollPayment {
+  id                   String   @id @default(uuid())
+  employee_id          String
+  employee             Employee @relation(fields: [employee_id], references: [id])
+  month                String   // "YYYY-MM"
+  base_salary          Decimal  @db.Decimal(14, 2)
+  increment_amount     Decimal  @db.Decimal(14, 2) @default(0)
+  total_advances        Decimal @db.Decimal(14, 2) @default(0)
+  net_paid             Decimal  @db.Decimal(14, 2)
+  paid_from_account_id String
+  paid_from_account    Account  @relation(fields: [paid_from_account_id], references: [id])
+  date_paid            DateTime @default(now())
+
+  @@unique([employee_id, month])
+  @@map("payroll_payments")
+}
+
+// A loan or advance given directly to an employee (cash out) that they pay back over time,
+// separate from SalaryAdvance (which is specifically month-scoped and auto-deducted from that
+// month's payroll). Outstanding balance = sum(EmployeeLoan.amount) - sum(EmployeeLoanRepayment.amount),
+// mirroring the same give/return ledger pattern used for CylinderLoan/CylinderReturn.
+model EmployeeLoan {
+  id                    String   @id @default(uuid())
+  employee_id           String
+  employee              Employee @relation(fields: [employee_id], references: [id])
+  amount                Decimal  @db.Decimal(14, 2)
+  date                  DateTime @default(now())
+  paid_from_account_id  String
+  paid_from_account     Account  @relation(fields: [paid_from_account_id], references: [id])
+  note                  String?
+  user_id               String
+  user                  User     @relation(fields: [user_id], references: [id])
+
+  @@map("employee_loans")
+}
+
+// Money received back from an employee against their outstanding loan/advance balance.
+model EmployeeLoanRepayment {
+  id                        String   @id @default(uuid())
+  employee_id               String
+  employee                  Employee @relation(fields: [employee_id], references: [id])
+  amount                    Decimal  @db.Decimal(14, 2)
+  date                      DateTime @default(now())
+  received_into_account_id  String
+  received_into_account     Account  @relation(fields: [received_into_account_id], references: [id])
+  user_id                   String
+  user                      User     @relation(fields: [user_id], references: [id])
+
+  @@map("employee_loan_repayments")
+}
+
+// ---------------------------------------------------------------------------
+// Insaaf Oxygen wing (Section 2)
+// ---------------------------------------------------------------------------
+
+enum SaleType {
+  GAS_ONLY
+  GAS_PLUS_CYLINDER
+  CYLINDER_EXCHANGE
+  OTHER_ITEM // non-cylinder products (e.g. a stove) — selected from the Product catalog like gas items, but permanently deducts stock (is_returnable=false) with no cylinder loan, same as GAS_PLUS_CYLINDER
+}
+
+enum StockMovementType {
+  PURCHASE_IN
+  SALE_OUT
+  CYLINDER_RETURN_IN
+  ADJUSTMENT
+}
+
+model Product {
+  id                String   @id @default(uuid())
+  wing_id           String
+  wing              Wing     @relation(fields: [wing_id], references: [id])
+  category          String   // "Industrial Oxygen" | "Medical Oxygen" | ... — seeded, not hardcoded
+  brand             String?
+  size_variant      String   // "40L", "7m3", "10m3", ...
+  unit_cost_price   Decimal  @db.Decimal(14, 2)
+  unit_sale_price   Decimal  @db.Decimal(14, 2)
+  current_stock_qty Int      @default(0) // DERIVED — never write directly
+  reorder_level     Int      @default(0)
+  is_returnable     Boolean  @default(true)
+  is_deleted        Boolean  @default(false) // soft-delete; Admin only
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  sale_line_items   SaleLineItem[]
+  cylinder_loans    CylinderLoan[]
+  cylinder_returns  CylinderReturn[]
+  stock_ledger      StockLedgerEntry[]
+
+  @@map("products")
+}
+
+model Sale {
+  id                  String   @id @default(uuid())
+  date                DateTime @default(now())
+  wing_id             String
+  wing                Wing     @relation(fields: [wing_id], references: [id])
+  customer_id         String
+  customer            Customer @relation(fields: [customer_id], references: [id])
+  user_id             String
+  user                User     @relation(fields: [user_id], references: [id])
+  sale_type           SaleType
+  total_amount        Decimal  @db.Decimal(14, 2)
+  paid_now_amount     Decimal  @db.Decimal(14, 2)
+  paid_into_account_id String?
+  paid_into_account   Account? @relation("sale_paid_into_account", fields: [paid_into_account_id], references: [id])
+  due_amount          Decimal  @db.Decimal(14, 2)
+  stock_deducted      Boolean  @default(false)
+  delivery_employee_id String?
+  delivery_employee   Employee? @relation(fields: [delivery_employee_id], references: [id])
+
+  line_items          SaleLineItem[]
+  cylinder_loans      CylinderLoan[]
+
+  @@map("sales")
+}
+
+model SaleLineItem {
+  id                String   @id @default(uuid())
+  sale_id           String
+  sale              Sale     @relation(fields: [sale_id], references: [id])
+  product_id        String
+  product           Product  @relation(fields: [product_id], references: [id])
+  quantity          Int
+  unit_price        Decimal  @db.Decimal(14, 2)
+  subtotal          Decimal  @db.Decimal(14, 2)
+
+  @@map("sale_line_items")
+}
+
+model CylinderLoan {
+  id                String   @id @default(uuid())
+  customer_id       String
+  customer          Customer @relation(fields: [customer_id], references: [id])
+  product_id        String
+  product           Product  @relation(fields: [product_id], references: [id])
+  quantity_on_loan  Int
+  date_issued       DateTime @default(now())
+  linked_sale_id    String?
+  linked_sale       Sale?    @relation(fields: [linked_sale_id], references: [id])
+
+  @@unique([customer_id, product_id])
+  @@map("cylinder_loans")
+}
+
+model CylinderReturn {
+  id                String   @id @default(uuid())
+  customer_id       String
+  customer          Customer @relation(fields: [customer_id], references: [id])
+  product_id        String
+  product           Product  @relation(fields: [product_id], references: [id])
+  quantity_returned Int
+  date              DateTime @default(now())
+  linked_loan_id    String?
+
+  @@map("cylinder_returns")
+}
+
+model DuePayment {
+  id                     String   @id @default(uuid())
+  customer_id            String
+  customer               Customer @relation(fields: [customer_id], references: [id])
+  amount                 Decimal  @db.Decimal(14, 2)
+  date                   DateTime @default(now())
+  received_into_account_id String
+  received_into_account  Account  @relation(fields: [received_into_account_id], references: [id])
+  user_id                String
+  user                   User     @relation(fields: [user_id], references: [id])
+
+  @@map("due_payments")
+}
+
+model StockLedgerEntry {
+  id                String            @id @default(uuid())
+  product_id        String
+  product           Product           @relation(fields: [product_id], references: [id])
+  date              DateTime          @default(now())
+  movement_type     StockMovementType
+  quantity          Int               // signed: +in, -out
+  reference_type    String            // SALE | CYLINDER_RETURN | PURCHASE | ADJUSTMENT
+  reference_id      String
+  resulting_balance Int
+
+  @@map("stock_ledger_entries")
+}
