@@ -61,7 +61,7 @@ export async function createSale(input: CreateSaleInput) {
       include: { line_items: true },
     });
 
-    // 2. Stock ledger for sold/delivered items, including gas-only cylinders held by customers
+    // 2. Stock ledger for permanently-sold cylinders (Rule 2)
     for (const delta of effects.stockDeltas) {
       await applyStockDelta(tx, {
         product_id: delta.product_id,
@@ -72,7 +72,7 @@ export async function createSale(input: CreateSaleInput) {
       });
     }
 
-    // 3. Cylinder loans/on-hold quantities for gas-only deliveries (Rule 1)
+    // 3. Cylinder loans for gas-only deliveries (Rule 1)
     for (const delta of effects.cylinderLoanDeltas) {
       const existing = await tx.cylinderLoan.findUnique({
         where: { customer_id_product_id: { customer_id: input.customer_id, product_id: delta.product_id } },

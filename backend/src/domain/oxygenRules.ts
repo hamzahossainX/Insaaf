@@ -40,7 +40,7 @@ export function sumLineItems(lineItems: SaleLineItemInput[]): number {
 }
 
 export interface SaleEffects {
-  /** Per-product stock deltas (negative = deducted from stock). */
+  /** Per-product stock deltas (negative = deducted from stock). Empty for GAS_ONLY. */
   stockDeltas: { product_id: string; quantity: number }[];
   /** Per-product cylinder-loan increments to apply for this customer. Empty unless GAS_ONLY. */
   cylinderLoanDeltas: { product_id: string; quantity: number }[];
@@ -48,7 +48,7 @@ export interface SaleEffects {
 
 /**
  * Rules 1 & 2:
- *  - GAS_ONLY: deducts stock and increments CylinderLoan by qty delivered per SKU.
+ *  - GAS_ONLY: no stock deduction; increments CylinderLoan by qty delivered per SKU.
  *  - GAS_PLUS_CYLINDER: permanently deducts stock per SKU; no CylinderLoan created.
  *  - CYLINDER_EXCHANGE: treated like GAS_PLUS_CYLINDER for stock purposes (cylinder
  *    changes hands permanently as part of the exchange transaction) — no loan.
@@ -62,10 +62,7 @@ export function computeSaleEffects(
 ): SaleEffects {
   if (saleType === "GAS_ONLY") {
     return {
-      stockDeltas: lineItems.map((li) => ({
-        product_id: li.product_id,
-        quantity: -li.quantity,
-      })),
+      stockDeltas: [],
       cylinderLoanDeltas: lineItems.map((li) => ({
         product_id: li.product_id,
         quantity: li.quantity,

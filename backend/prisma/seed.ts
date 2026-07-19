@@ -108,17 +108,17 @@ async function main() {
         date, wing_id: oxygen.id, customer_id: customer.id, user_id: day % 2 === 0 ? admin.id : member.id,
         sale_type: saleType, total_amount: total, paid_now_amount: paidNow,
         paid_into_account_id: paidNow > 0 ? account.id : undefined, due_amount: due,
-        stock_deducted: true,
+        stock_deducted: saleType !== "GAS_ONLY",
         line_items: { create: [{ product_id: product.id, quantity: qty, unit_price: unitPrice, subtotal: total }] },
       },
     });
 
-    const p = await prisma.product.findUniqueOrThrow({ where: { id: product.id } });
-    const newBal = p.current_stock_qty - qty;
-    await prisma.stockLedgerEntry.create({ data: { product_id: product.id, movement_type: StockMovementType.SALE_OUT, quantity: -qty, reference_type: "SALE", reference_id: sale.id, resulting_balance: newBal } });
-    await prisma.product.update({ where: { id: product.id }, data: { current_stock_qty: newBal } });
-
-    if (saleType === "GAS_ONLY") {
+    if (saleType !== "GAS_ONLY") {
+      const p = await prisma.product.findUniqueOrThrow({ where: { id: product.id } });
+      const newBal = p.current_stock_qty - qty;
+      await prisma.stockLedgerEntry.create({ data: { product_id: product.id, movement_type: StockMovementType.SALE_OUT, quantity: -qty, reference_type: "SALE", reference_id: sale.id, resulting_balance: newBal } });
+      await prisma.product.update({ where: { id: product.id }, data: { current_stock_qty: newBal } });
+    } else {
       const existingLoan = await prisma.cylinderLoan.findUnique({ where: { customer_id_product_id: { customer_id: customer.id, product_id: product.id } } });
       if (existingLoan) {
         await prisma.cylinderLoan.update({ where: { id: existingLoan.id }, data: { quantity_on_loan: existingLoan.quantity_on_loan + qty, linked_sale_id: sale.id } });
