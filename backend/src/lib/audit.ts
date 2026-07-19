@@ -12,7 +12,7 @@ export async function writeAuditLog(
     action: "CREATE" | "UPDATE" | "DELETE";
     entity: string;
     entity_id: string;
-    diff?: any;
+    diff?: Prisma.InputJsonValue;
   }
 ) {
   await tx.auditLog.create({
@@ -21,7 +21,7 @@ export async function writeAuditLog(
       action: params.action,
       entity: params.entity,
       entity_id: params.entity_id,
-      diff: params.diff as any,
+      diff: params.diff ?? {},
     },
   });
 }
