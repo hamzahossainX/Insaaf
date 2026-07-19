@@ -50,11 +50,13 @@ describe("Rule 6 — Payment split validation", () => {
 });
 
 describe("Rule 1 — Gas-only sale", () => {
-  it("does not deduct stock and increments a cylinder loan by quantity delivered", () => {
+  it("deducts stock and increments a cylinder loan by quantity delivered", () => {
     const effects = computeSaleEffects("GAS_ONLY", [
       { product_id: "prod-o2-40l", quantity: 3, unit_price: 500 },
     ]);
-    expect(effects.stockDeltas).toEqual([]);
+    expect(effects.stockDeltas).toEqual([
+      { product_id: "prod-o2-40l", quantity: -3 },
+    ]);
     expect(effects.cylinderLoanDeltas).toEqual([
       { product_id: "prod-o2-40l", quantity: 3 },
     ]);
