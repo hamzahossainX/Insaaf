@@ -17,8 +17,8 @@ import { errorMiddleware } from "./lib/http";
 const app = express();
 
 // Allow the deployed frontend origin + localhost for dev.
-// Set FRONTEND_URL env var in Vercel to your frontend deployment URL.
 const allowedOrigins = [
+  "https://insaaf-two.vercel.app",
   "http://localhost:5173",
   process.env.FRONTEND_URL,
 ].filter(Boolean) as string[];
@@ -44,6 +44,7 @@ app.use(express.json());
 // so req.user is populated by then. There is intentionally no global create-only
 // middleware ahead of auth, since req.user wouldn't exist yet at that point.
 
+app.get("/", (_req, res) => res.json({ message: "Live" }));
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api/auth", authRouter);

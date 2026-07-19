@@ -1,13 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 
-// Singleton PrismaClient (avoids exhausting connections in dev with hot reload).
+// Singleton PrismaClient. In Vercel serverless, a warm function runtime can
+// reuse globalThis between invocations, which helps avoid connection churn.
 declare global {
   // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
 }
 
-export const prisma = global.__prisma ?? new PrismaClient();
+export const prisma = globalThis.__prisma ?? new PrismaClient();
 
-if (process.env.NODE_ENV !== "production") {
-  global.__prisma = prisma;
-}
+globalThis.__prisma = prisma;

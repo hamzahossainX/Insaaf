@@ -1,13 +1,15 @@
 import axios from "axios";
 
-// In production (Vercel), VITE_API_URL is set to the backend Vercel URL.
-// In local dev the Vite proxy rewrites /api → http://localhost:4000, so
-// the relative baseURL "/api" works without needing an env var.
-const baseURL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL}/api`
-  : "/api";
+const apiOrigin =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? "" : "https://insaaf-backend.vercel.app");
 
-export const api = axios.create({ baseURL });
+const baseURL = `${apiOrigin.replace(/\/$/, "")}/api`;
+
+export const api = axios.create({
+  baseURL,
+  withCredentials: true,
+});
 
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("insaaf_token");
