@@ -1,9 +1,5 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-<<<<<<< HEAD
-=======
-import { ShoppingCart } from "lucide-react";
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 import CustomerAutocomplete from "../components/CustomerAutocomplete";
@@ -36,10 +32,7 @@ export default function NewSale() {
   const [paidNow, setPaidNow] = useState<number | "">("");
   const [paidIntoAccount, setPaidIntoAccount] = useState("");
   const [deliveryEmployeeId, setDeliveryEmployeeId] = useState("");
-<<<<<<< HEAD
   const [note, setNote] = useState("");
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
@@ -69,10 +62,7 @@ export default function NewSale() {
         paid_into_account_id: paidNowNum > 0 ? paidIntoAccount : undefined,
         due_amount: due,
         delivery_employee_id: deliveryEmployeeId || undefined,
-<<<<<<< HEAD
         note: note || undefined,
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       }),
     onSuccess: () => {
       setSuccess("Sale recorded.");
@@ -80,10 +70,7 @@ export default function NewSale() {
       setLineItems([]);
       setPaidNow("");
       setDeliveryEmployeeId("");
-<<<<<<< HEAD
       setNote("");
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       qc.invalidateQueries({ queryKey: ["products"] });
       qc.invalidateQueries({ queryKey: ["customers"] });
     },
@@ -125,14 +112,7 @@ export default function NewSale() {
 
   return (
     <div className="max-w-3xl space-y-6">
-<<<<<<< HEAD
       <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">New Sale</h1>
-=======
-      <div className="page-header">
-        <div className="page-header-icon"><ShoppingCart size={20} /></div>
-        <h1 className="text-2xl font-semibold">New Sale</h1>
-      </div>
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
       {success && <div className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-lg px-3 py-2">{success}</div>}
       {error && <div className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg px-3 py-2">{error}</div>}
@@ -242,14 +222,11 @@ export default function NewSale() {
           </select>
         </div>
 
-<<<<<<< HEAD
         <div>
           <label className="label">Note (optional)</label>
           <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any extra context for this sale..." />
         </div>
 
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <div className="flex justify-between text-sm text-gray-600 dark:text-slate-300">
           <span>Due</span>
           <span className="font-medium">{currency(due)}</span>
@@ -275,11 +252,7 @@ function label(t: SaleType) {
 }
 
 function explain(t: SaleType) {
-<<<<<<< HEAD
   if (t === "GAS_ONLY") return "Cylinder leaves the premises on loan — stock is deducted now and comes back when the customer returns the cylinder.";
-=======
-  if (t === "GAS_ONLY") return "Cylinder stays loaned to the customer — no stock deducted; a cylinder loan is created/incremented.";
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   if (t === "GAS_PLUS_CYLINDER") return "Cylinder is sold outright — stock is permanently deducted; no loan is created.";
   if (t === "CYLINDER_EXCHANGE") return "Cylinder changes hands as part of an exchange — stock is permanently deducted; no loan is created.";
   return "Non-cylinder products from the catalog (e.g. a stove) — picked the same way as gas. Stock is permanently deducted; it never comes back.";

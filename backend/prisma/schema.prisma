@@ -8,16 +8,10 @@ generator client {
 }
 
 datasource db {
-<<<<<<< HEAD
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-=======
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  // directUrl is the non-pooled Neon connection used only for `prisma migrate`.
-  // Vercel/serverless runtime uses DATABASE_URL (pooler) for all queries.
+  // Use a direct connection for migrations when DATABASE_URL points at a pooler.
   directUrl = env("DIRECT_URL")
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 // ---------------------------------------------------------------------------
@@ -68,10 +62,8 @@ model User {
   wing_id       String?
   wing          Wing?    @relation(fields: [wing_id], references: [id])
   is_active     Boolean  @default(true)
-<<<<<<< HEAD
   note          String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
+  token_version Int      @default(0) // incremented on password change to revoke existing sessions
   created_at    DateTime @default(now())
 
   audit_logs    AuditLog[]
@@ -80,12 +72,9 @@ model User {
   expenses      Expense[]
   employee_loans_recorded EmployeeLoan[]
   employee_loan_repayments_recorded EmployeeLoanRepayment[]
-<<<<<<< HEAD
   supplier_receipts_recorded SupplierReceipt[]
   supplier_payments_recorded SupplierPayment[]
   supplier_sends_recorded SupplierCylinderSend[]
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@map("users")
 }
@@ -127,10 +116,7 @@ model Account {
   type            String   // Cash | Bank | bKash | ...
   current_balance Decimal  @default(0) @db.Decimal(14, 2) // DERIVED — never write directly
   is_active       Boolean  @default(true) // soft-delete/deactivate; Admin only
-<<<<<<< HEAD
   note            String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   ledger_entries  AccountLedgerEntry[]
   sales_paid_now  Sale[]              @relation("sale_paid_into_account")
@@ -140,11 +126,8 @@ model Account {
   payroll_payments PayrollPayment[]
   employee_loans_given EmployeeLoan[]
   employee_loan_repayments_received EmployeeLoanRepayment[]
-<<<<<<< HEAD
   supplier_receipts_paid SupplierReceipt[]
   supplier_payments_made SupplierPayment[]
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@map("accounts")
 }
@@ -190,10 +173,7 @@ model Employee {
   base_salary  Decimal  @db.Decimal(14, 2)
   join_date    DateTime
   is_active    Boolean  @default(true)
-<<<<<<< HEAD
   note         String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   advances     SalaryAdvance[]
   increments   SalaryIncrement[]
@@ -214,10 +194,7 @@ model SalaryAdvance {
   paid_from_account_id  String
   paid_from_account     Account  @relation(fields: [paid_from_account_id], references: [id])
   month_applied_to      String   // "YYYY-MM"
-<<<<<<< HEAD
   note                  String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@map("salary_advances")
 }
@@ -246,10 +223,7 @@ model PayrollPayment {
   paid_from_account_id String
   paid_from_account    Account  @relation(fields: [paid_from_account_id], references: [id])
   date_paid            DateTime @default(now())
-<<<<<<< HEAD
   note                 String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@unique([employee_id, month])
   @@map("payroll_payments")
@@ -283,10 +257,7 @@ model EmployeeLoanRepayment {
   date                      DateTime @default(now())
   received_into_account_id  String
   received_into_account     Account  @relation(fields: [received_into_account_id], references: [id])
-<<<<<<< HEAD
   note                      String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   user_id                   String
   user                      User     @relation(fields: [user_id], references: [id])
 
@@ -309,11 +280,8 @@ enum StockMovementType {
   SALE_OUT
   CYLINDER_RETURN_IN
   ADJUSTMENT
-<<<<<<< HEAD
   SUPPLIER_RECEIPT_IN // cylinders received from a supplier — refilled returns and/or brand new units
   SUPPLIER_SEND_OUT   // client's own empty cylinders sent to a supplier for refill
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 model Product {
@@ -329,10 +297,7 @@ model Product {
   reorder_level     Int      @default(0)
   is_returnable     Boolean  @default(true)
   is_deleted        Boolean  @default(false) // soft-delete; Admin only
-<<<<<<< HEAD
   note              String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   created_at        DateTime @default(now())
   updated_at        DateTime @updatedAt
 
@@ -340,12 +305,9 @@ model Product {
   cylinder_loans    CylinderLoan[]
   cylinder_returns  CylinderReturn[]
   stock_ledger      StockLedgerEntry[]
-<<<<<<< HEAD
   supplier_receipts SupplierReceipt[]
   supplier_holds    SupplierCylinderHold[]
   supplier_sends    SupplierCylinderSend[]
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@map("products")
 }
@@ -368,10 +330,7 @@ model Sale {
   stock_deducted      Boolean  @default(false)
   delivery_employee_id String?
   delivery_employee   Employee? @relation(fields: [delivery_employee_id], references: [id])
-<<<<<<< HEAD
   note                String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   line_items          SaleLineItem[]
   cylinder_loans      CylinderLoan[]
@@ -416,10 +375,7 @@ model CylinderReturn {
   quantity_returned Int
   date              DateTime @default(now())
   linked_loan_id    String?
-<<<<<<< HEAD
   note              String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   @@map("cylinder_returns")
 }
@@ -432,10 +388,7 @@ model DuePayment {
   date                   DateTime @default(now())
   received_into_account_id String
   received_into_account  Account  @relation(fields: [received_into_account_id], references: [id])
-<<<<<<< HEAD
   note                   String?
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   user_id                String
   user                   User     @relation(fields: [user_id], references: [id])
 
@@ -455,7 +408,6 @@ model StockLedgerEntry {
 
   @@map("stock_ledger_entries")
 }
-<<<<<<< HEAD
 
 // ---------------------------------------------------------------------------
 // Suppliers — the mirror image of the Customer/CylinderLoan/DuePayment system,
@@ -569,5 +521,3 @@ model SupplierPayment {
 
   @@map("supplier_payments")
 }
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac

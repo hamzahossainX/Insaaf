@@ -1,8 +1,5 @@
 import axios from "axios";
 
-<<<<<<< HEAD
-export const api = axios.create({ baseURL: "/api" });
-=======
 const apiOrigin =
   import.meta.env.VITE_API_URL ||
   (import.meta.env.DEV ? "" : "https://insaaf-backend.vercel.app");
@@ -13,7 +10,6 @@ export const api = axios.create({
   baseURL,
   withCredentials: true,
 });
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("insaaf_token");

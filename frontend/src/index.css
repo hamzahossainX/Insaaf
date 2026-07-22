@@ -6,17 +6,11 @@ html { -webkit-text-size-adjust: 100%; }
 
 /* Tells the browser which palette to use for native UI it renders itself —
    select dropdown lists, date/number pickers, checkboxes, scrollbars — so they
-<<<<<<< HEAD
    don't flash white inside an otherwise dark page. */
-=======
-   don't flash white inside an otherwise dark page. This is the main fix for
-   "white background appears when clicking a field" in dark mode. */
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 :root { color-scheme: light; }
 .dark { color-scheme: dark; }
 
 body {
-<<<<<<< HEAD
   @apply font-sans antialiased;
   /* Light: soft neutral canvas, not stark white, so cards read as elevated.
      Dark: deep slate rather than pure black — a hallmark of premium dark UI
@@ -59,147 +53,6 @@ body, .card, .btn, .input, .table-base, aside, header {
   @apply w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 bg-white;
   @apply focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition-shadow;
   @apply dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500;
-=======
-  @apply bg-gray-50 text-gray-900 antialiased font-sans;
-  @apply dark:bg-slate-900 dark:text-slate-100;
-  background-image: radial-gradient(at 0% 0%, rgba(20,184,166,0.07) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(56,189,248,0.07) 0px, transparent 45%);
-  background-attachment: fixed;
-}
-.dark body { background-image: radial-gradient(at 0% 0%, rgba(20,184,166,0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(56,189,248,0.05) 0px, transparent 45%); }
-
-/* Slim, unobtrusive custom scrollbar */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { @apply bg-gray-300 dark:bg-slate-600; border-radius: 9999px; border: 2px solid transparent; background-clip: padding-box; }
-::-webkit-scrollbar-thumb:hover { @apply bg-gray-400 dark:bg-slate-500; background-clip: padding-box; }
-
-/* Smooth theme transitions without animating every property on every element */
-body, .card, .btn, .input, .table-base, aside, header {
-  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Component classes live in Tailwind's "components" layer so that any utility
-   class applied alongside them (e.g. `pl-9` on `.input`, `mt-2` on `.card`)
-   always wins in the cascade, exactly as it does for every other Tailwind
-   project — utilities are guaranteed to come after components. */
-@layer components {
-  .card {
-    @apply bg-white rounded-xl shadow-card border border-gray-200 p-4;
-    @apply dark:bg-slate-800 dark:border-slate-700;
-    transition: box-shadow 200ms ease, border-color 200ms ease, transform 200ms ease, background-color 150ms ease, color 150ms ease;
-  }
-  .card:hover {
-    @apply shadow-card-hover;
-    transform: translateY(-2px);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card:hover { transform: none; }
-  }
-
-  .btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150;
-    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 dark:focus-visible:ring-offset-slate-900;
-    @apply active:scale-[0.97];
-  }
-  .btn-primary {
-    @apply btn bg-brand-gradient text-white shadow-sm hover:shadow-glow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm;
-    @apply dark:text-slate-900 dark:font-semibold;
-    background-size: 160% 160%;
-    background-position: 0% 50%;
-  }
-  .btn-primary:hover:not(:disabled) { background-position: 100% 50%; }
-  .btn-secondary {
-    @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed;
-    @apply dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600;
-  }
-
-  .input {
-    @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 bg-white transition-shadow duration-150;
-    @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent;
-    @apply dark:bg-slate-900 dark:border-slate-600 dark:text-slate-100 dark:placeholder:text-slate-500;
-  }
-
-  .label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
-    @apply dark:text-slate-300;
-  }
-
-  .table-base { @apply w-full text-sm text-left; }
-  .table-base th {
-    @apply px-3 py-2 font-medium text-gray-500 bg-gray-50 border-b border-gray-200 whitespace-nowrap;
-    @apply dark:text-slate-400 dark:bg-slate-800/60 dark:border-slate-700;
-  }
-  .table-base td {
-    @apply px-3 py-2 border-b border-gray-100;
-    @apply dark:border-slate-700/60;
-  }
-  .table-base tbody tr {
-    @apply hover:bg-gray-50 dark:hover:bg-slate-700/30;
-    transition: background-color 150ms ease, transform 150ms ease;
-  }
-  .table-base tbody tr:hover { transform: translateX(1px); }
-  .table-base tfoot td { @apply dark:bg-slate-800/80; }
-
-  /* Scrollable table wrapper — used on any wide table so it degrades to horizontal
-     scroll on small screens instead of squashing or overflowing the viewport. */
-  .table-scroll { @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0; }
-
-  /* Compact icon-only action button, used for row-level actions (view/delete) in
-     tables so they stay usable and well-positioned at any screen width. */
-  .icon-btn {
-    @apply inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700;
-    @apply dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200;
-    @apply disabled:opacity-40 disabled:pointer-events-none transition-all duration-150 active:scale-90;
-  }
-  .icon-btn-danger {
-    @apply icon-btn hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400;
-  }
-
-  /* Page header: icon badge + title, used at the top of every module page */
-  .page-header {
-    @apply flex items-center gap-3 animate-fade-in-up;
-  }
-  .page-header-icon {
-    @apply w-10 h-10 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center shadow-sm;
-  }
-  .page-header h1 {
-    @apply leading-tight;
-  }
-  .page-header-sub {
-    @apply text-sm text-gray-500 dark:text-slate-400 mt-0.5;
-  }
-
-  /* Whole-page entrance so navigating between modules feels alive, not jarring */
-  .page-enter {
-    @apply animate-fade-in-up;
-  }
-
-  /* Small pill badges for statuses/counts */
-  .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium;
-  }
-  .badge-brand { @apply badge bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-300; }
-  .badge-warn { @apply badge bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300; }
-  .badge-danger { @apply badge bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-400; }
-
-  /* Stat card accents (Dashboard) */
-  .stat-icon {
-    @apply w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-transform duration-200;
-  }
-  .card:hover .stat-icon { transform: scale(1.08) rotate(-3deg); }
-
-  /* Stagger helper: apply with style="animationDelay: `${i * 40}ms`" on list/grid children */
-  .stagger-item { @apply animate-fade-in-up; }
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /* Chrome/Safari autofill (e.g. saved phone numbers) forces its own white
@@ -217,7 +70,6 @@ input[type="checkbox"], input[type="radio"] {
   @apply accent-brand-600 dark:accent-brand-400;
 }
 
-<<<<<<< HEAD
 .label {
   @apply block text-sm font-medium text-gray-700 mb-1;
   @apply dark:text-slate-300;
@@ -255,8 +107,6 @@ input[type="checkbox"], input[type="radio"] {
   @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
 }
 
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 /* Printing: always render on plain white with black text regardless of the
    active theme, hide navigation/controls, and flatten cards to simple bordered
    sections instead of grey-filled boxes — cleaner and more ink-friendly. */

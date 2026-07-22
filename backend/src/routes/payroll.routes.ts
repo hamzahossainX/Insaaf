@@ -36,10 +36,7 @@ const createEmployeeSchema = z.object({
   wing_id: z.string(),
   base_salary: z.number().nonnegative(),
   join_date: z.string(),
-<<<<<<< HEAD
   note: z.string().optional(),
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 payrollRouter.post(
@@ -69,10 +66,7 @@ const advanceSchema = z.object({
   amount: z.number().positive(),
   paid_from_account_id: z.string(),
   month_applied_to: z.string(),
-<<<<<<< HEAD
   note: z.string().optional(),
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 // Admin only, per Screen 9 ("Add Advance", "Add Increment" — Admin only).
@@ -111,11 +105,7 @@ payrollRouter.get(
   })
 );
 
-<<<<<<< HEAD
 const runPayrollSchema = z.object({ employee_id: z.string(), month: z.string(), paid_from_account_id: z.string(), note: z.string().optional() });
-=======
-const runPayrollSchema = z.object({ employee_id: z.string(), month: z.string(), paid_from_account_id: z.string() });
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
 payrollRouter.post(
   "/run",

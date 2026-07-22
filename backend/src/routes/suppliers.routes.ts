@@ -25,13 +25,6 @@ suppliersRouter.get(
   })
 );
 
-suppliersRouter.get(
-  "/:id",
-  asyncHandler(async (req, res) => {
-    res.json(await getSupplierProfile(req.params.id));
-  })
-);
-
 const createSupplierSchema = z.object({
   name: z.string().min(1),
   phone: z.string().min(1),
@@ -67,6 +60,13 @@ suppliersRouter.get(
   "/holds/all",
   asyncHandler(async (_req, res) => {
     res.json(await listAllSupplierHolds());
+  })
+);
+
+suppliersRouter.get(
+  "/:id",
+  asyncHandler(async (req, res) => {
+    res.json(await getSupplierProfile(req.params.id));
   })
 );
 

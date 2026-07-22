@@ -36,10 +36,7 @@ export interface AddAdvanceInput {
   paid_from_account_id: string;
   month_applied_to: string; // "YYYY-MM"
   user_id: string;
-<<<<<<< HEAD
   note?: string;
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /** Admin only. */
@@ -51,10 +48,7 @@ export async function addSalaryAdvance(input: AddAdvanceInput) {
         amount: input.amount,
         paid_from_account_id: input.paid_from_account_id,
         month_applied_to: input.month_applied_to,
-<<<<<<< HEAD
         note: input.note || undefined,
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       },
     });
     await applyAccountLedgerEntry(tx, {
@@ -132,10 +126,7 @@ export interface RunPayrollInput {
   month: string;
   paid_from_account_id: string;
   user_id: string;
-<<<<<<< HEAD
   note?: string;
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /** "Run Month-End Payroll" (Screen 9) — persists after Admin confirms the preview. */
@@ -152,10 +143,7 @@ export async function runMonthEndPayroll(input: RunPayrollInput) {
         total_advances: preview.total_advances,
         net_paid: preview.net_paid,
         paid_from_account_id: input.paid_from_account_id,
-<<<<<<< HEAD
         note: input.note || undefined,
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       },
     });
 

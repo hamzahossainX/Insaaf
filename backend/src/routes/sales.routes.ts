@@ -19,10 +19,7 @@ const saleSchema = z.object({
   due_amount: z.number().nonnegative(),
   date: z.string().optional(),
   delivery_employee_id: z.string().optional(),
-<<<<<<< HEAD
   note: z.string().optional(),
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 // Members may create sales (Create-only role); no update/delete endpoints exist for Sale by design.

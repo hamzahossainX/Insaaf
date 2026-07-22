@@ -56,10 +56,7 @@ export interface RecordDuePaymentInput {
   received_into_account_id: string;
   user_id: string;
   date?: string;
-<<<<<<< HEAD
   note?: string;
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /** Rule 5: decreases Customer.current_due_balance and increases the account balance. */
@@ -75,10 +72,7 @@ export async function recordDuePayment(input: RecordDuePaymentInput) {
         received_into_account_id: input.received_into_account_id,
         user_id: input.user_id,
         date: input.date ? new Date(input.date) : undefined,
-<<<<<<< HEAD
         note: input.note || undefined,
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       },
     });
 

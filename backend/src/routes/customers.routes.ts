@@ -25,11 +25,11 @@ customersRouter.get(
 );
 
 const createCustomerSchema = z.object({
-  name: z.string().min(1),
-  phone: z.string().min(1),
-  address: z.string().optional(),
-  notes: z.string().optional(),
-});
+  name: z.string().trim().min(1).max(100),
+  phone: z.string().trim().min(1).max(32),
+  address: z.string().trim().max(500).optional(),
+  notes: z.string().trim().max(2000).optional(),
+}).strict();
 
 // Any authenticated user (Admin or Member) may create customers — Create-only for Members.
 customersRouter.post(
@@ -49,8 +49,12 @@ customersRouter.put(
   "/:id",
   requireAdmin,
   asyncHandler(async (req, res) => {
-    const customer = await prisma.customer.update({ where: { id: req.params.id }, data: req.body });
-    await prisma.auditLog.create({ data: { user_id: req.user!.sub, action: "UPDATE", entity: "Customer", entity_id: req.params.id, diff: req.body } });
+    const body = createCustomerSchema.partial().parse(req.body);
+    const customer = await prisma.$transaction(async (tx) => {
+      const updated = await tx.customer.update({ where: { id: req.params.id }, data: body });
+      await writeAuditLog(tx, { user_id: req.user!.sub, action: "UPDATE", entity: "Customer", entity_id: req.params.id, diff: body });
+      return updated;
+    });
     res.json(customer);
   })
 );
@@ -68,10 +72,7 @@ const duePaymentSchema = z.object({
   amount: z.number().positive(),
   received_into_account_id: z.string(),
   date: z.string().optional(),
-<<<<<<< HEAD
   note: z.string().optional(),
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 customersRouter.post(

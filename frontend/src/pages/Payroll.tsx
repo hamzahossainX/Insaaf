@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-<<<<<<< HEAD
 import { Trash2 } from "lucide-react";
-=======
-import { UserCog } from "lucide-react";
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -28,7 +24,6 @@ export default function Payroll() {
   const currentMonth = new Date().toISOString().slice(0, 7);
   const [advanceAmt, setAdvanceAmt] = useState<number | "">("");
   const [advanceAccount, setAdvanceAccount] = useState("");
-<<<<<<< HEAD
   const [advanceNote, setAdvanceNote] = useState("");
   const [advanceError, setAdvanceError] = useState("");
   const [incType, setIncType] = useState<"ONE_TIME_BONUS" | "PERMANENT_RAISE">("ONE_TIME_BONUS");
@@ -37,13 +32,6 @@ export default function Payroll() {
   const [incError, setIncError] = useState("");
   const [payrollAccount, setPayrollAccount] = useState("");
   const [payrollNote, setPayrollNote] = useState("");
-=======
-  const [advanceError, setAdvanceError] = useState("");
-  const [incType, setIncType] = useState<"ONE_TIME_BONUS" | "PERMANENT_RAISE">("ONE_TIME_BONUS");
-  const [incAmount, setIncAmount] = useState<number | "">("");
-  const [incError, setIncError] = useState("");
-  const [payrollAccount, setPayrollAccount] = useState("");
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   const [payrollError, setPayrollError] = useState("");
   const [preview, setPreview] = useState<any>(null);
 
@@ -58,7 +46,6 @@ export default function Payroll() {
   const [loanGiveError, setLoanGiveError] = useState("");
   const [loanReceiveAmt, setLoanReceiveAmt] = useState<number | "">("");
   const [loanReceiveAccount, setLoanReceiveAccount] = useState("");
-<<<<<<< HEAD
   const [loanReceiveNote, setLoanReceiveNote] = useState("");
   const [loanReceiveError, setLoanReceiveError] = useState("");
 
@@ -70,18 +57,6 @@ export default function Payroll() {
   const addIncrement = useMutation({
     mutationFn: () => api.post("/payroll/increments", { employee_id: selected, type: incType, amount_or_new_base: incAmount, effective_month: currentMonth, note: incNote || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["employee", selected] }); setIncAmount(""); setIncNote(""); setIncError(""); },
-=======
-  const [loanReceiveError, setLoanReceiveError] = useState("");
-
-  const addAdvance = useMutation({
-    mutationFn: () => api.post("/payroll/advances", { employee_id: selected, amount: advanceAmt, paid_from_account_id: advanceAccount, month_applied_to: currentMonth }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["employee", selected] }); qc.invalidateQueries({ queryKey: ["accounts"] }); setAdvanceAmt(""); setAdvanceError(""); },
-    onError: (e: any) => setAdvanceError(e?.response?.data?.error ?? "Failed to add advance"),
-  });
-  const addIncrement = useMutation({
-    mutationFn: () => api.post("/payroll/increments", { employee_id: selected, type: incType, amount_or_new_base: incAmount, effective_month: currentMonth }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["employee", selected] }); setIncAmount(""); setIncError(""); },
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onError: (e: any) => setIncError(e?.response?.data?.error ?? "Failed to add increment"),
   });
   const loadPreview = useMutation({
@@ -90,13 +65,8 @@ export default function Payroll() {
     onError: (e: any) => setPayrollError(e?.response?.data?.error ?? "Failed to load preview"),
   });
   const runPayroll = useMutation({
-<<<<<<< HEAD
     mutationFn: () => api.post("/payroll/run", { employee_id: selected, month: currentMonth, paid_from_account_id: payrollAccount, note: payrollNote || undefined }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["employee", selected] }); qc.invalidateQueries({ queryKey: ["accounts"] }); setPreview(null); setPayrollNote(""); setPayrollError(""); },
-=======
-    mutationFn: () => api.post("/payroll/run", { employee_id: selected, month: currentMonth, paid_from_account_id: payrollAccount }),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["employee", selected] }); qc.invalidateQueries({ queryKey: ["accounts"] }); setPreview(null); setPayrollError(""); },
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onError: (e: any) => setPayrollError(e?.response?.data?.error ?? "Failed to run payroll"),
   });
   const deactivate = useMutation({
@@ -115,35 +85,19 @@ export default function Payroll() {
     onError: (e: any) => setLoanGiveError(e?.response?.data?.error ?? "Failed to give loan/advance"),
   });
   const receiveRepayment = useMutation({
-<<<<<<< HEAD
     mutationFn: () => api.post("/employee-loans/repayments", { employee_id: selected, amount: loanReceiveAmt, received_into_account_id: loanReceiveAccount, note: loanReceiveNote || undefined }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["employee-loans", selected] });
       qc.invalidateQueries({ queryKey: ["accounts"] });
       setLoanReceiveAmt(""); setLoanReceiveNote(""); setLoanReceiveError("");
-=======
-    mutationFn: () => api.post("/employee-loans/repayments", { employee_id: selected, amount: loanReceiveAmt, received_into_account_id: loanReceiveAccount }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["employee-loans", selected] });
-      qc.invalidateQueries({ queryKey: ["accounts"] });
-      setLoanReceiveAmt(""); setLoanReceiveError("");
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     },
     onError: (e: any) => setLoanReceiveError(e?.response?.data?.error ?? "Failed to record repayment"),
   });
 
   return (
     <div className="space-y-4">
-<<<<<<< HEAD
       <div className="flex flex-wrap gap-2 justify-between items-center">
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Employees & Payroll</h1>
-=======
-      <div className="flex flex-wrap gap-2 justify-between items-center page-header">
-        <div className="flex items-center gap-3">
-          <div className="page-header-icon"><UserCog size={20} /></div>
-          <h1 className="text-2xl font-semibold">Employees & Payroll</h1>
-        </div>
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         {isAdmin && <button className="btn-primary" onClick={() => setShowAddEmployee(!showAddEmployee)}>+ Add employee</button>}
       </div>
 
@@ -160,7 +114,6 @@ export default function Payroll() {
           <div className="px-4 py-2 font-medium border-b border-gray-200 dark:border-slate-700">Employees</div>
           {(employees ?? []).length === 0 && <div className="px-4 py-3 text-sm text-gray-400 dark:text-slate-500">No employees yet. Use "+ Add employee" above.</div>}
           {(employees ?? []).map((e: any) => (
-<<<<<<< HEAD
             <div key={e.id} className={`flex items-center justify-between gap-2 px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-700/40 ${selected === e.id ? "bg-brand-50 dark:bg-brand-500/15" : ""}`}>
               <button className="text-left flex-1 min-w-0" onClick={() => { setSelected(e.id); setPreview(null); }}>
                 <div className="font-medium truncate">{e.name}</div>
@@ -170,25 +123,11 @@ export default function Payroll() {
                 <button
                   className="icon-btn-danger shrink-0"
                   title="Remove employee"
-=======
-            <div key={e.id} className={`flex items-center justify-between px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-slate-700/40 ${selected === e.id ? "bg-brand-50" : ""}`}>
-              <button className="text-left flex-1" onClick={() => { setSelected(e.id); setPreview(null); }}>
-                <div className="font-medium">{e.name}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400">{e.role} · {currency(e.base_salary)}/mo</div>
-              </button>
-              {isAdmin && (
-                <button
-                  className="text-red-500 dark:text-red-400 text-xs ml-2"
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                   onClick={() => {
                     if (confirm(`Remove ${e.name} from active employees? Their history is kept.`)) deactivate.mutate(e.id);
                   }}
                 >
-<<<<<<< HEAD
                   <Trash2 size={16} />
-=======
-                  Remove
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                 </button>
               )}
             </div>
@@ -240,10 +179,7 @@ export default function Payroll() {
                         <option value="">Received into...</option>
                         {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
                       </select>
-<<<<<<< HEAD
                       <input className="input" placeholder="Note (optional)" value={loanReceiveNote} onChange={(e) => setLoanReceiveNote(e.target.value)} />
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                       <button
                         className="btn-primary w-full"
                         disabled={!loanReceiveAmt || !loanReceiveAccount || receiveRepayment.isPending || !loanSummary?.outstanding_balance}
@@ -288,10 +224,7 @@ export default function Payroll() {
                       <option value="">Paid from...</option>
                       {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
                     </select>
-<<<<<<< HEAD
                     <input className="input" placeholder="Note (optional)" value={advanceNote} onChange={(e) => setAdvanceNote(e.target.value)} />
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                     <button className="btn-primary w-full" disabled={!advanceAmt || !advanceAccount || addAdvance.isPending} onClick={() => addAdvance.mutate()}>
                       {addAdvance.isPending ? "Adding..." : "Add advance"}
                     </button>
@@ -304,10 +237,7 @@ export default function Payroll() {
                       <option value="PERMANENT_RAISE">Permanent raise (new base)</option>
                     </select>
                     <input className="input" type="number" placeholder="Amount / new base" value={incAmount} onChange={(e) => setIncAmount(e.target.value === "" ? "" : Number(e.target.value))} />
-<<<<<<< HEAD
                     <input className="input" placeholder="Note (optional)" value={incNote} onChange={(e) => setIncNote(e.target.value)} />
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                     <button className="btn-primary w-full" disabled={!incAmount || addIncrement.isPending} onClick={() => addIncrement.mutate()}>
                       {addIncrement.isPending ? "Adding..." : "Add increment"}
                     </button>
@@ -332,10 +262,7 @@ export default function Payroll() {
                         <option value="">Pay from account...</option>
                         {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
                       </select>
-<<<<<<< HEAD
                       <input className="input mt-2" placeholder="Note (optional)" value={payrollNote} onChange={(e) => setPayrollNote(e.target.value)} />
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
                       <button className="btn-primary w-full mt-2" disabled={!payrollAccount || runPayroll.isPending} onClick={() => runPayroll.mutate()}>
                         {runPayroll.isPending ? "Paying..." : "Confirm & pay"}
                       </button>
@@ -430,18 +357,11 @@ function AddEmployeeForm({ wings, defaultWingId, onDone }: { wings: any[]; defau
   const [wingId, setWingId] = useState(defaultWingId ?? "");
   const [baseSalary, setBaseSalary] = useState<number | "">("");
   const [joinDate, setJoinDate] = useState(new Date().toISOString().slice(0, 10));
-<<<<<<< HEAD
   const [note, setNote] = useState("");
   const [error, setError] = useState("");
 
   const create = useMutation({
     mutationFn: () => api.post("/payroll/employees", { name, role, wing_id: wingId, base_salary: baseSalary, join_date: joinDate, note: note || undefined }),
-=======
-  const [error, setError] = useState("");
-
-  const create = useMutation({
-    mutationFn: () => api.post("/payroll/employees", { name, role, wing_id: wingId, base_salary: baseSalary, join_date: joinDate }),
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onSuccess: onDone,
     onError: (e: any) => setError(e?.response?.data?.error ?? "Failed to add employee"),
   });
@@ -460,10 +380,7 @@ function AddEmployeeForm({ wings, defaultWingId, onDone }: { wings: any[]; defau
       </div>
       <div><label className="label">Base salary</label><input className="input" type="number" value={baseSalary} onChange={(e) => setBaseSalary(e.target.value === "" ? "" : Number(e.target.value))} /></div>
       <div><label className="label">Join date</label><input className="input" type="date" value={joinDate} onChange={(e) => setJoinDate(e.target.value)} /></div>
-<<<<<<< HEAD
       <div className="sm:col-span-2 lg:col-span-5"><label className="label">Note (optional)</label><input className="input" value={note} onChange={(e) => setNote(e.target.value)} /></div>
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       <button className="btn-primary sm:col-span-2 lg:col-span-5" disabled={!name || !role || !wingId || !baseSalary || create.isPending} onClick={() => create.mutate()}>
         {create.isPending ? "Saving..." : "Save employee"}
       </button>

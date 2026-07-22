@@ -40,30 +40,20 @@ export function sumLineItems(lineItems: SaleLineItemInput[]): number {
 }
 
 export interface SaleEffects {
-<<<<<<< HEAD
   /** Per-product stock deltas (negative = deducted from stock). Every sale type deducts stock
    * the moment the cylinder/item leaves the premises — including GAS_ONLY, since the cylinder
    * is physically gone from stock even though it's expected back. */
   stockDeltas: { product_id: string; quantity: number }[];
   /** Per-product cylinder-loan increments to apply for this customer. Only set for GAS_ONLY. */
-=======
-  /** Per-product stock deltas (negative = deducted from stock). Empty for GAS_ONLY. */
-  stockDeltas: { product_id: string; quantity: number }[];
-  /** Per-product cylinder-loan increments to apply for this customer. Empty unless GAS_ONLY. */
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   cylinderLoanDeltas: { product_id: string; quantity: number }[];
 }
 
 /**
  * Rules 1 & 2:
-<<<<<<< HEAD
  *  - GAS_ONLY: deducts stock per SKU (the cylinder leaves the premises), AND increments
  *    CylinderLoan by qty delivered — e.g. 20 in stock, order 1 gas-only → stock 19, on-loan 1.
  *    Returning it later (Rule 3) adds stock back and clears the loan — e.g. stock 19 + 1 = 20,
  *    on-loan 1 - 1 = 0.
-=======
- *  - GAS_ONLY: no stock deduction; increments CylinderLoan by qty delivered per SKU.
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
  *  - GAS_PLUS_CYLINDER: permanently deducts stock per SKU; no CylinderLoan created.
  *  - CYLINDER_EXCHANGE: treated like GAS_PLUS_CYLINDER for stock purposes (cylinder
  *    changes hands permanently as part of the exchange transaction) — no loan.
@@ -75,7 +65,6 @@ export function computeSaleEffects(
   saleType: SaleType,
   lineItems: SaleLineItemInput[]
 ): SaleEffects {
-<<<<<<< HEAD
   // Every sale type deducts stock the moment the item leaves the premises.
   const stockDeltas = lineItems.map((li) => ({
     product_id: li.product_id,
@@ -85,30 +74,14 @@ export function computeSaleEffects(
   if (saleType === "GAS_ONLY") {
     return {
       stockDeltas,
-=======
-  if (saleType === "GAS_ONLY") {
-    return {
-      stockDeltas: [],
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       cylinderLoanDeltas: lineItems.map((li) => ({
         product_id: li.product_id,
         quantity: li.quantity,
       })),
     };
   }
-<<<<<<< HEAD
   // GAS_PLUS_CYLINDER / CYLINDER_EXCHANGE / OTHER_ITEM — no loan, cylinder never expected back.
   return { stockDeltas, cylinderLoanDeltas: [] };
-=======
-  // GAS_PLUS_CYLINDER / CYLINDER_EXCHANGE / OTHER_ITEM
-  return {
-    stockDeltas: lineItems.map((li) => ({
-      product_id: li.product_id,
-      quantity: -li.quantity,
-    })),
-    cylinderLoanDeltas: [],
-  };
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /**

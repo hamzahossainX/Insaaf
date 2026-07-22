@@ -12,11 +12,7 @@ export async function writeAuditLog(
     action: "CREATE" | "UPDATE" | "DELETE";
     entity: string;
     entity_id: string;
-<<<<<<< HEAD
-    diff?: Record<string, unknown>;
-=======
     diff?: Prisma.InputJsonValue;
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   }
 ) {
   await tx.auditLog.create({

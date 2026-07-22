@@ -7,9 +7,26 @@ on:
     branches: [main, develop]
 
 jobs:
+  repository-integrity:
+    name: Repository — Merge Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Reject unresolved merge markers
+        run: |
+          if git grep -n -E '^(<<<<<<<|=======|>>>>>>>)'; then
+            echo "Unresolved merge markers found"
+            exit 1
+          fi
+
   backend-test:
     name: Backend — Type Check & Tests
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
+      DIRECT_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
     defaults:
       run:
         working-directory: backend
@@ -30,6 +47,9 @@ jobs:
 
       - name: Generate Prisma Client
         run: npx prisma generate
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
 
       - name: TypeScript type check
         run: npx tsc --noEmit

@@ -50,7 +50,6 @@ describe("Rule 6 — Payment split validation", () => {
 });
 
 describe("Rule 1 — Gas-only sale", () => {
-<<<<<<< HEAD
   it("deducts stock AND increments a cylinder loan by quantity delivered", () => {
     const effects = computeSaleEffects("GAS_ONLY", [
       { product_id: "prod-o2-40l", quantity: 3, unit_price: 500 },
@@ -58,18 +57,10 @@ describe("Rule 1 — Gas-only sale", () => {
     expect(effects.stockDeltas).toEqual([
       { product_id: "prod-o2-40l", quantity: -3 },
     ]);
-=======
-  it("does not deduct stock and increments a cylinder loan by quantity delivered", () => {
-    const effects = computeSaleEffects("GAS_ONLY", [
-      { product_id: "prod-o2-40l", quantity: 3, unit_price: 500 },
-    ]);
-    expect(effects.stockDeltas).toEqual([]);
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     expect(effects.cylinderLoanDeltas).toEqual([
       { product_id: "prod-o2-40l", quantity: 3 },
     ]);
   });
-<<<<<<< HEAD
 
   it("worked example: 20 in stock, order 1 gas-only -> stock 19, on-loan 1; return it -> stock 20, on-loan 0", () => {
     const saleEffects = computeSaleEffects("GAS_ONLY", [
@@ -84,8 +75,6 @@ describe("Rule 1 — Gas-only sale", () => {
     expect(stockAfterSale + stockDelta).toBe(20);
     expect(newLoanQty).toBe(0);
   });
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 describe("Rule 2 — Gas + cylinder sale", () => {

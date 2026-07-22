@@ -22,15 +22,9 @@ export async function getAccountLedger(account_id: string) {
   return prisma.accountLedgerEntry.findMany({ where: { account_id }, orderBy: { date: "desc" } });
 }
 
-<<<<<<< HEAD
 export async function createAccount(name: string, type: string, opening_balance: number, user_id: string, note?: string) {
   return prisma.$transaction(async (tx) => {
     const account = await tx.account.create({ data: { name, type, current_balance: opening_balance, note: note || undefined } });
-=======
-export async function createAccount(name: string, type: string, opening_balance: number, user_id: string) {
-  return prisma.$transaction(async (tx) => {
-    const account = await tx.account.create({ data: { name, type, current_balance: opening_balance } });
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     if (opening_balance > 0) {
       await tx.accountLedgerEntry.create({
         data: {

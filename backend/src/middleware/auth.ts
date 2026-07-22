@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { JwtPayload, verifyToken } from "../lib/auth";
+import { getCurrentUserState } from "../lib/authState";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -11,16 +12,28 @@ declare global {
 }
 
 /** Requires a valid JWT. Attaches decoded payload to req.user. */
-export function requireAuth(req: Request, res: Response, next: NextFunction) {
+export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const header = req.headers.authorization;
   if (!header?.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Missing or invalid Authorization header" });
   }
+  let payload: JwtPayload;
   try {
-    req.user = verifyToken(header.slice("Bearer ".length));
-    next();
+    payload = verifyToken(header.slice("Bearer ".length));
   } catch {
     return res.status(401).json({ error: "Invalid or expired token" });
+  }
+
+  try {
+    const user = await getCurrentUserState(payload.sub);
+    if (!user?.is_active) return res.status(401).json({ error: "User account is inactive" });
+    if (payload.ver !== user.token_version) return res.status(401).json({ error: "Session has been revoked" });
+
+    // Use current database permissions so deactivation and role changes take effect immediately.
+    req.user = { sub: user.id, name: user.name, role: user.role, wing_id: user.wing_id, ver: user.token_version };
+    next();
+  } catch (error) {
+    next(error);
   }
 }
 

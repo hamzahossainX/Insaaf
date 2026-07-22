@@ -1,18 +1,10 @@
-<<<<<<< HEAD
-node_modules/
-dist/
-build/
-.env
-*.log
-.DS_Store
-backend/prisma/migrations/.tmp
-=======
 # ─── Dependencies ────────────────────────────────────────────────────────────
 node_modules/
 
 # ─── Build outputs ────────────────────────────────────────────────────────────
 dist/
 build/
+*.tsbuildinfo
 
 # ─── Environment — never commit real secrets ──────────────────────────────────
 .env
@@ -44,4 +36,3 @@ coverage/
 
 # ─── Miscellaneous ────────────────────────────────────────────────────────────
 git_push.sh
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac

@@ -1,7 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { inclusiveDateRange } from "../lib/dateRange";
 
-<<<<<<< HEAD
 export interface ActivityEvent {
   id: string;
   type: "SALE" | "DUE_PAYMENT" | "EXPENSE" | "CYLINDER_RETURN" | "EMPLOYEE_LOAN" | "EMPLOYEE_LOAN_REPAYMENT" | "PAYROLL" | "SUPPLIER_RECEIPT" | "SUPPLIER_PAYMENT";
@@ -77,7 +76,7 @@ export async function recentActivity(limit = 15): Promise<ActivityEvent[]> {
       type: "SALE",
       date: s.date,
       title: `Sale to ${s.customer?.name ?? "customer"}`,
-      subtitle: s.sale_type.replaceAll("_", " "),
+      subtitle: s.sale_type.replace(/_/g, " "),
       amount: Number(s.total_amount),
       direction: "IN",
       user_name: s.user?.name,
@@ -161,8 +160,6 @@ export async function recentActivity(limit = 15): Promise<ActivityEvent[]> {
   return events.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, limit);
 }
 
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 export async function salesReport(wing_id?: string, from?: string, to?: string) {
   const sales = await prisma.sale.findMany({
     where: { wing_id, date: inclusiveDateRange(from, to) },

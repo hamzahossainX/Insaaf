@@ -9,19 +9,32 @@ import { accountsRouter } from "./routes/accounts.routes";
 import { expensesRouter } from "./routes/expenses.routes";
 import { payrollRouter } from "./routes/payroll.routes";
 import { employeeLoansRouter } from "./routes/employeeLoans.routes";
+import { suppliersRouter } from "./routes/suppliers.routes";
 import { usersRouter } from "./routes/users.routes";
 import { wingsRouter } from "./routes/wings.routes";
 import { reportsRouter } from "./routes/reports.routes";
-import { errorMiddleware } from "./lib/http";
+import { errorMiddleware, HttpError } from "./lib/http";
+import { prisma } from "./lib/prisma";
+import { parseConfiguredOrigins, validateProductionEnvironment } from "./lib/config";
 
+validateProductionEnvironment();
 const app = express();
+app.disable("x-powered-by");
+if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
 
-// Allow the deployed frontend origin + localhost for dev.
-const allowedOrigins = [
-  "https://insaaf-two.vercel.app",
-  "http://localhost:5173",
-  process.env.FRONTEND_URL,
-].filter(Boolean) as string[];
+const allowedOrigins = parseConfiguredOrigins();
+
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("Referrer-Policy", "no-referrer");
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  res.setHeader("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  next();
+});
 
 app.use(
   cors({
@@ -30,14 +43,14 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error(`CORS: origin ${origin} not allowed`));
+        callback(new HttpError(403, "Origin not allowed"));
       }
     },
     credentials: true,
   })
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "100kb" }));
 
 // NOTE: Members are Create-only. This is enforced per-route via requireAdmin on
 // every UPDATE/DELETE endpoint (see middleware/auth.ts), applied AFTER requireAuth
@@ -46,6 +59,14 @@ app.use(express.json());
 
 app.get("/", (_req, res) => res.json({ message: "Live" }));
 app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/ready", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ ok: true });
+  } catch {
+    res.status(503).json({ ok: false });
+  }
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/sales", salesRouter);
@@ -56,6 +77,7 @@ app.use("/api/accounts", accountsRouter);
 app.use("/api/expenses", expensesRouter);
 app.use("/api/payroll", payrollRouter);
 app.use("/api/employee-loans", employeeLoansRouter);
+app.use("/api/suppliers", suppliersRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/wings", wingsRouter);
 app.use("/api/reports", reportsRouter);

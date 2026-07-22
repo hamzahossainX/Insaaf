@@ -6,16 +6,14 @@ import Dashboard from "./pages/Dashboard";
 import NewSale from "./pages/NewSale";
 import CylinderReturns from "./pages/CylinderReturns";
 import CustomersRoutes from "./pages/Customers";
-<<<<<<< HEAD
 import SuppliersRoutes from "./pages/Suppliers";
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import Products from "./pages/Products";
 import Accounts from "./pages/Accounts";
 import Expenses from "./pages/Expenses";
 import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import ChangePassword from "./pages/ChangePassword";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user, checkingSession } = useAuth();
@@ -45,15 +43,13 @@ export default function App() {
         <Route path="sales/new" element={<NewSale />} />
         <Route path="cylinder-returns" element={<CylinderReturns />} />
         <Route path="customers/*" element={<CustomersRoutes />} />
-<<<<<<< HEAD
         <Route path="suppliers/*" element={<SuppliersRoutes />} />
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <Route path="products" element={<Products />} />
         <Route path="accounts" element={<Accounts />} />
         <Route path="expenses" element={<Expenses />} />
         <Route path="payroll" element={<Payroll />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="change-password" element={<ChangePassword />} />
         <Route
           path="settings"
           element={

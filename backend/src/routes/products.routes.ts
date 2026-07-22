@@ -32,11 +32,12 @@ const createProductSchema = z.object({
   reorder_level: z.number().int().nonnegative().optional(),
   opening_stock_qty: z.number().int().nonnegative().optional(),
   is_returnable: z.boolean().optional(),
-<<<<<<< HEAD
   note: z.string().optional(),
-=======
->>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
-});
+}).strict();
+
+const updateProductSchema = createProductSchema
+  .omit({ wing_id: true, opening_stock_qty: true, is_returnable: true })
+  .partial();
 
 // Admin-only create/edit/delete of gas type/size definitions (Screen 6).
 productsRouter.post(
@@ -52,7 +53,8 @@ productsRouter.put(
   "/:id",
   requireAdmin,
   asyncHandler(async (req, res) => {
-    res.json(await updateProduct(req.params.id, req.user!.sub, req.body));
+    const body = updateProductSchema.parse(req.body);
+    res.json(await updateProduct(req.params.id, req.user!.sub, body));
   })
 );
 
