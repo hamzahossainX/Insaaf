@@ -12,7 +12,10 @@ const returnSchema = z.object({
   product_id: z.string(),
   quantity_returned: z.number().int().positive(),
   date: z.string().optional(),
+<<<<<<< HEAD
   note: z.string().optional(),
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 cylindersRouter.post(

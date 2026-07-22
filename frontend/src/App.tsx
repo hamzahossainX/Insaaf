@@ -6,7 +6,10 @@ import Dashboard from "./pages/Dashboard";
 import NewSale from "./pages/NewSale";
 import CylinderReturns from "./pages/CylinderReturns";
 import CustomersRoutes from "./pages/Customers";
+<<<<<<< HEAD
 import SuppliersRoutes from "./pages/Suppliers";
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import Products from "./pages/Products";
 import Accounts from "./pages/Accounts";
 import Expenses from "./pages/Expenses";
@@ -42,7 +45,10 @@ export default function App() {
         <Route path="sales/new" element={<NewSale />} />
         <Route path="cylinder-returns" element={<CylinderReturns />} />
         <Route path="customers/*" element={<CustomersRoutes />} />
+<<<<<<< HEAD
         <Route path="suppliers/*" element={<SuppliersRoutes />} />
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <Route path="products" element={<Products />} />
         <Route path="accounts" element={<Accounts />} />
         <Route path="expenses" element={<Expenses />} />

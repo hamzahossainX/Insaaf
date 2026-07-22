@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
+=======
+import { Settings as SettingsIcon } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -20,6 +24,7 @@ export default function Settings() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"ADMIN" | "MEMBER">("MEMBER");
   const [wingId, setWingId] = useState("");
+<<<<<<< HEAD
   const [note, setNote] = useState("");
 
   const createUser = useMutation({
@@ -27,12 +32,27 @@ export default function Settings() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["users"] });
       setName(""); setPhone(""); setPassword(""); setNote("");
+=======
+
+  const createUser = useMutation({
+    mutationFn: () => api.post("/users", { name, phone, password, role, wing_id: role === "MEMBER" ? wingId : undefined }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["users"] });
+      setName(""); setPhone(""); setPassword("");
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     },
   });
 
   return (
     <div className="space-y-6 max-w-3xl">
+<<<<<<< HEAD
       <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Settings — User Management</h1>
+=======
+      <div className="page-header">
+        <div className="page-header-icon"><SettingsIcon size={20} /></div>
+        <h1 className="text-2xl font-semibold">Settings — User Management</h1>
+      </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       <p className="text-sm text-gray-500 dark:text-slate-400">
         Gas categories/sizes and expense categories are managed inline from the Products and Expenses screens
         (they're seeded as data, not hardcoded, so new ones can be added freely). Accounts are managed from the
@@ -59,7 +79,10 @@ export default function Settings() {
             </select>
           </div>
         )}
+<<<<<<< HEAD
         <div className="sm:col-span-2"><label className="label">Note (optional)</label><input className="input" value={note} onChange={(e) => setNote(e.target.value)} /></div>
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <button className="btn-primary sm:col-span-2" disabled={!name || !phone || !password || (role === "MEMBER" && !wingId)} onClick={() => createUser.mutate()}>
           Create user
         </button>

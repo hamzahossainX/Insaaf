@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { Trash2 } from "lucide-react";
+=======
+import { Trash2, Receipt } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -39,8 +43,16 @@ export default function Expenses() {
 
   return (
     <div className="space-y-4">
+<<<<<<< HEAD
       <div className="flex flex-wrap gap-2 justify-between items-center">
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Expenses</h1>
+=======
+      <div className="flex flex-wrap gap-2 justify-between items-center page-header">
+        <div className="flex items-center gap-3">
+          <div className="page-header-icon"><Receipt size={20} /></div>
+          <h1 className="text-2xl font-semibold">Expenses</h1>
+        </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <button className="btn-primary" onClick={() => setShowForm(!showForm)}>+ Add expense</button>
       </div>
 

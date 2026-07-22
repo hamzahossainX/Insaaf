@@ -1,0 +1,19 @@
+# Code Owners
+# Each line is a pattern + one or more owners.
+# These owners are automatically added as reviewers on PRs.
+
+# Global fallback — repository owner
+*                           @hamzahossainX
+
+# Backend
+/backend/prisma/            @hamzahossainX
+/backend/src/               @hamzahossainX
+
+# Frontend
+/frontend/src/              @hamzahossainX
+
+# CI / Deployment config — needs careful review
+/.github/                   @hamzahossainX
+/backend/vercel.json        @hamzahossainX
+/frontend/vercel.json       @hamzahossainX
+/docker-compose.yml         @hamzahossainX

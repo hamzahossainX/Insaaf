@@ -7,9 +7,13 @@ import {
   payrollReport,
   profitSummary,
   duePaymentsCollectedReport,
+<<<<<<< HEAD
   recentActivity,
 } from "../services/reports.service";
 import { supplierPayablesReport, supplierActivityReport } from "../services/suppliers.service";
+=======
+} from "../services/reports.service";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { asyncHandler } from "../lib/http";
 import { requireAuth } from "../middleware/auth";
 
@@ -32,11 +36,14 @@ reportsRouter.get("/due-collected", asyncHandler(async (req, res) => {
   res.json(await duePaymentsCollectedReport(from, to));
 }));
 
+<<<<<<< HEAD
 reportsRouter.get("/recent-activity", asyncHandler(async (req, res) => {
   const { limit } = req.query as Record<string, string | undefined>;
   res.json(await recentActivity(limit ? Number(limit) : undefined));
 }));
 
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 reportsRouter.get("/stock", asyncHandler(async (req, res) => res.json(await stockMovementReport(effectiveWing(req)))));
 
 reportsRouter.get("/expenses", asyncHandler(async (req, res) => {
@@ -53,6 +60,7 @@ reportsRouter.get("/profit-summary", asyncHandler(async (req, res) => {
   const { from, to } = req.query as Record<string, string | undefined>;
   res.json(await profitSummary(effectiveWing(req), from, to));
 }));
+<<<<<<< HEAD
 
 reportsRouter.get("/supplier-payables", asyncHandler(async (_req, res) => res.json(await supplierPayablesReport())));
 
@@ -60,3 +68,5 @@ reportsRouter.get("/supplier-activity", asyncHandler(async (req, res) => {
   const { from, to } = req.query as Record<string, string | undefined>;
   res.json(await supplierActivityReport(from, to));
 }));
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac

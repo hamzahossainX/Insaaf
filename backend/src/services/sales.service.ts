@@ -22,7 +22,10 @@ export interface CreateSaleInput {
   due_amount: number;
   date?: string;
   delivery_employee_id?: string;
+<<<<<<< HEAD
   note?: string;
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 export async function createSale(input: CreateSaleInput) {
@@ -50,7 +53,10 @@ export async function createSale(input: CreateSaleInput) {
         stock_deducted: effects.stockDeltas.length > 0,
         date: input.date ? new Date(input.date) : undefined,
         delivery_employee_id: input.delivery_employee_id || undefined,
+<<<<<<< HEAD
         note: input.note || undefined,
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         line_items: {
           create: input.line_items.map((li) => ({
             product_id: li.product_id,
@@ -63,8 +69,12 @@ export async function createSale(input: CreateSaleInput) {
       include: { line_items: true },
     });
 
+<<<<<<< HEAD
     // 2. Stock ledger — every sale type deducts stock the moment the item leaves the
     //    premises, including GAS_ONLY (Rule 1), which is still expected back via a loan below.
+=======
+    // 2. Stock ledger for permanently-sold cylinders (Rule 2)
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     for (const delta of effects.stockDeltas) {
       await applyStockDelta(tx, {
         product_id: delta.product_id,

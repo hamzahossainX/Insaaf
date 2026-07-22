@@ -12,7 +12,11 @@ Auth: `Authorization: Bearer <JWT>` on every route except `/auth/login`.
 ## Sales (POS)
 | Method | Path | Role | Notes |
 |---|---|---|---|
+<<<<<<< HEAD
 | POST | `/sales` | Admin/Member | Creates a sale; runs cylinder-loan / stock / due logic in one transaction. `sale_type` is one of `GAS_ONLY`, `GAS_PLUS_CYLINDER`, `CYLINDER_EXCHANGE`, `OTHER_ITEM`. `GAS_ONLY` deducts stock immediately (the cylinder leaves the premises) AND creates/increments a `CylinderLoan` — stock and the loan are both reversed by a Cylinder Return. `OTHER_ITEM` lines pick from the Product catalog exactly like gas lines do (`product_id` required) — just from non-cylinder products (`is_returnable: false`, e.g. a stove). Behaves like `GAS_PLUS_CYLINDER`: stock is permanently deducted, no cylinder loan. Optional `delivery_employee_id` assigns a delivery person from Employees. |
+=======
+| POST | `/sales` | Admin/Member | Creates a sale; runs cylinder-loan / stock / due logic in one transaction. `sale_type` is one of `GAS_ONLY`, `GAS_PLUS_CYLINDER`, `CYLINDER_EXCHANGE`, `OTHER_ITEM`. `OTHER_ITEM` lines pick from the Product catalog exactly like gas lines do (`product_id` required) — just from non-cylinder products (`is_returnable: false`, e.g. a stove). Behaves like `GAS_PLUS_CYLINDER`: stock is permanently deducted, no cylinder loan. Optional `delivery_employee_id` assigns a delivery person from Employees. |
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 | GET | `/sales?wing_id=&customer_id=&from=&to=` | Admin/Member | Members are auto-scoped to their own wing. `to` is inclusive of the whole day. |
 
 ## Cylinders
@@ -76,6 +80,7 @@ this is cash given to an employee that they pay back directly, whenever it suits
 | GET | `/employee-loans/employee/:employee_id` | Admin/Member — that employee's loans, repayments, and outstanding balance |
 | GET | `/employee-loans?from=&to=` | Admin/Member — all employees' activity + outstanding balances (`to` inclusive of the whole day) |
 
+<<<<<<< HEAD
 ## Suppliers
 The mirror image of the Customer/CylinderLoan/DuePayment system, for what the business owes a
 supplier rather than what a customer owes the business. Wing-agnostic like Customer.
@@ -92,6 +97,8 @@ supplier rather than what a customer owes the business. Wing-agnostic like Custo
 | POST | `/suppliers/receipts` | Admin/Member | Record a delivery: `refill_quantity` and/or `new_quantity` (both add to stock; only refill clears the hold), `total_amount`/`paid_now_amount`/`due_amount` (same payment-split rule as a Sale) — `due_amount` adds to the payable balance ("cylinders on credit") |
 | POST | `/suppliers/payments` | **Admin only** | Pay a supplier — `type: ADVANCE \| INSTALLMENT`. Both simply reduce the payable balance; an advance paid before any receipt is allowed to push it negative (prepaid credit) |
 
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 ## Users (Admin only, all routes)
 | Method | Path |
 |---|---|
@@ -109,9 +116,12 @@ supplier rather than what a customer owes the business. Wing-agnostic like Custo
 |---|---|
 | GET | `/reports/sales?wing_id=&from=&to=` |
 | GET | `/reports/due-collected?from=&to=` — sum of actual `DuePayment` records (not sale-time collections) |
+<<<<<<< HEAD
 | GET | `/reports/recent-activity?limit=15` — unified feed of the most recent sales, due payments, expenses, cylinder returns, employee loan activity, payroll runs, and supplier receipts/payments |
 | GET | `/reports/supplier-payables` — every supplier's outstanding payable balance + total |
 | GET | `/reports/supplier-activity?from=&to=` — supplier receipts and payments in a date range |
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 | GET | `/reports/receivables` — aging buckets: 0-30 / 31-60 / 61-90 / 90+ |
 | GET | `/reports/stock?wing_id=` |
 | GET | `/reports/expenses?wing_id=&from=&to=` |

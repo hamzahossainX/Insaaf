@@ -108,11 +108,16 @@ async function main() {
         date, wing_id: oxygen.id, customer_id: customer.id, user_id: day % 2 === 0 ? admin.id : member.id,
         sale_type: saleType, total_amount: total, paid_now_amount: paidNow,
         paid_into_account_id: paidNow > 0 ? account.id : undefined, due_amount: due,
+<<<<<<< HEAD
         stock_deducted: true, // every sale type deducts stock now, including GAS_ONLY (on loan)
+=======
+        stock_deducted: saleType !== "GAS_ONLY",
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         line_items: { create: [{ product_id: product.id, quantity: qty, unit_price: unitPrice, subtotal: total }] },
       },
     });
 
+<<<<<<< HEAD
     // Every sale type deducts stock the moment the item leaves the premises.
     const p = await prisma.product.findUniqueOrThrow({ where: { id: product.id } });
     const newBal = p.current_stock_qty - qty;
@@ -121,6 +126,14 @@ async function main() {
 
     // GAS_ONLY also tracks a loan — the cylinder is expected back via a Cylinder Return.
     if (saleType === "GAS_ONLY") {
+=======
+    if (saleType !== "GAS_ONLY") {
+      const p = await prisma.product.findUniqueOrThrow({ where: { id: product.id } });
+      const newBal = p.current_stock_qty - qty;
+      await prisma.stockLedgerEntry.create({ data: { product_id: product.id, movement_type: StockMovementType.SALE_OUT, quantity: -qty, reference_type: "SALE", reference_id: sale.id, resulting_balance: newBal } });
+      await prisma.product.update({ where: { id: product.id }, data: { current_stock_qty: newBal } });
+    } else {
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       const existingLoan = await prisma.cylinderLoan.findUnique({ where: { customer_id_product_id: { customer_id: customer.id, product_id: product.id } } });
       if (existingLoan) {
         await prisma.cylinderLoan.update({ where: { id: existingLoan.id }, data: { quantity_on_loan: existingLoan.quantity_on_loan + qty, linked_sale_id: sale.id } });
@@ -196,6 +209,7 @@ async function main() {
     await prisma.salaryIncrement.create({ data: { employee_id: employee.id, type: "ONE_TIME_BONUS", amount_or_new_base: 1000, effective_month: month, note: "Eid bonus (seed)" } });
   }
 
+<<<<<<< HEAD
   // 8. Suppliers — one supplier with a cylinder-hold cycle and a month-by-month payoff,
   //    demonstrating send -> receive (refill + new together) -> advance -> installment.
   const supplier = await prisma.supplier.upsert({
@@ -251,6 +265,8 @@ async function main() {
     await prisma.supplier.update({ where: { id: supplier.id }, data: { current_payable_balance: { decrement: 100000 } } });
   }
 
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   console.log("Seed complete.");
   console.log(`Admin login:  phone=01700000001  password=admin123`);
   console.log(`Member login: phone=01700000002  password=member123`);

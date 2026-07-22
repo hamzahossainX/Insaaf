@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
+=======
+import { PackageOpen } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import CustomerAutocomplete from "../components/CustomerAutocomplete";
 
@@ -7,7 +11,10 @@ export default function CylinderReturns() {
   const qc = useQueryClient();
   const [customerId, setCustomerId] = useState("");
   const [qtyByProduct, setQtyByProduct] = useState<Record<string, number | "">>({});
+<<<<<<< HEAD
   const [note, setNote] = useState("");
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   const [message, setMessage] = useState("");
 
   const { data: allLoans } = useQuery({
@@ -23,20 +30,34 @@ export default function CylinderReturns() {
 
   const submitReturn = useMutation({
     mutationFn: (payload: { product_id: string; quantity_returned: number }) =>
+<<<<<<< HEAD
       api.post("/cylinders/returns", { customer_id: customerId, note: note || undefined, ...payload }),
+=======
+      api.post("/cylinders/returns", { customer_id: customerId, ...payload }),
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["loans", customerId] });
       qc.invalidateQueries({ queryKey: ["all-loans"] });
       qc.invalidateQueries({ queryKey: ["products"] });
       setMessage("Return recorded.");
+<<<<<<< HEAD
       setNote("");
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     },
     onError: (e: any) => setMessage(e?.response?.data?.error ?? "Failed to record return"),
   });
 
   return (
     <div className="max-w-4xl space-y-6">
+<<<<<<< HEAD
       <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Cylinder Returns</h1>
+=======
+      <div className="page-header">
+        <div className="page-header-icon"><PackageOpen size={20} /></div>
+        <h1 className="text-2xl font-semibold">Cylinder Returns</h1>
+      </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
       {/* Overview: every cylinder currently out with a customer, expected back */}
       <div className="card p-0 overflow-hidden">
@@ -88,10 +109,13 @@ export default function CylinderReturns() {
           <div>
             <div className="label">Cylinders on loan</div>
             {(loans ?? []).length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">No cylinders currently on loan.</div>}
+<<<<<<< HEAD
             <div className="mb-3">
               <label className="label">Note (optional)</label>
               <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any extra context for this return..." />
             </div>
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
             <div className="space-y-2">
               {(loans ?? []).map((loan: any) => (
                 <div key={loan.id} className="flex flex-wrap sm:grid sm:grid-cols-12 gap-2 items-center border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2">

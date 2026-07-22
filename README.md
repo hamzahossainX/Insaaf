@@ -53,12 +53,21 @@ npm run seed                # loads wings, users, products, customers, ~2 weeks 
 npm run dev                 # http://localhost:4000
 ```
 
+<<<<<<< HEAD
 > **Migration note:** if you already have a working database from an earlier version of this
 > project, this update adds five new tables (`suppliers`, `supplier_receipts`,
 > `supplier_payments`, `supplier_cylinder_holds`, `supplier_cylinder_sends`) and two new
 > `StockMovementType` values. Run `npx prisma migrate dev --name suppliers` to pick them up —
 > existing data is unaffected. If this is a fresh database, just run
 > `npx prisma migrate dev --name init` as shown above and everything comes in one migration.
+=======
+> **Migration note:** if your last `prisma migrate dev` attempt failed with a schema validation
+> error (`P1012`), no migration was actually created — Prisma validates the schema before writing
+> anything. Just run `npx prisma migrate dev --name init` again now; the schema has been fixed
+> and this will create your first migration cleanly. If you'd already gotten a successful
+> migration running on an earlier version of this schema, use a fresh name instead, e.g.
+> `npx prisma migrate dev --name delivery_and_other_items`.
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
 > **Note on this build environment:** `prisma generate` downloads Prisma's query-engine binary
 > from `binaries.prisma.sh`, which was not reachable from the sandbox this module was built in
@@ -100,7 +109,11 @@ Covers Section 3's business rules directly against the literal worked examples:
 - Cylinder return: 10 on loan, return 5 → stock +5, loan balance 5.
 - Due payment: due 10, pay 5 → due becomes 5.
 - Payment-split validation (rejects mismatched `paid_now + due ≠ total`).
+<<<<<<< HEAD
 - Gas-only sale: stock deducted immediately (cylinder leaves the premises), cylinder loan created/incremented; stock returns and loan clears when the cylinder comes back.
+=======
+- Gas-only sale: no stock deduction, cylinder loan created/incremented.
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 - Gas + cylinder sale: stock permanently deducted, no loan created.
 - Payroll: base 10,000 + advance 5,000 mid-month → net payable 5,000.
 
@@ -112,7 +125,11 @@ quick way to eyeball the effects after running through the app).
 
 ## Business rules implemented (Section 3)
 
+<<<<<<< HEAD
 1. **Gas-only sale** — deducts stock immediately (the cylinder physically leaves the premises) and increments a `CylinderLoan`. Worked example: 20 in stock, order 1 gas-only → stock 19, on-loan 1. Returning it → stock 19 + 1 = 20, on-loan 1 - 1 = 0 (same mechanics as Rule 3 below).
+=======
+1. **Gas-only sale** — no stock deduction; increments a `CylinderLoan`.
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 2. **Gas + cylinder sale** — permanent stock deduction; no loan created.
 3. **Cylinder return** — stock +qty, loan balance −qty (same transaction).
 4. **Due creation** — `Customer.current_due_balance` derived from ledger, never written directly.
@@ -138,6 +155,7 @@ quick way to eyeball the effects after running through the app).
   corrections should go through a reversal/adjustment entry in a future iteration rather than
   mutating history.
 
+<<<<<<< HEAD
 ## Recent changes (new module — Suppliers)
 
 A genuinely new feature, built as the mirror image of the existing Customer/CylinderLoan/
@@ -243,6 +261,8 @@ CSS fix. All 17 backend tests still pass unmodified.
    the "Remove employee" action to a compact icon button and fixed a missed dark-mode color on
    the selected-row highlight.
 
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 ## Recent changes (responsive & dark-mode fixes)
 
 Another pure styling pass, no backend or logic changes (17/17 backend tests still pass).

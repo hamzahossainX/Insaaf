@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
+=======
+    "postinstall": "prisma generate",
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",

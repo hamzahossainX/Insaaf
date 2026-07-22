@@ -33,7 +33,10 @@ export interface CreateProductInput {
   reorder_level?: number;
   opening_stock_qty?: number;
   is_returnable?: boolean; // false for non-cylinder items (e.g. a stove) sold via OTHER_ITEM
+<<<<<<< HEAD
   note?: string;
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   user_id: string;
 }
 
@@ -50,7 +53,10 @@ export async function createProduct(input: CreateProductInput) {
         unit_sale_price: input.unit_sale_price,
         reorder_level: input.reorder_level ?? 0,
         is_returnable: input.is_returnable ?? true,
+<<<<<<< HEAD
         note: input.note || undefined,
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         current_stock_qty: 0,
       },
     });

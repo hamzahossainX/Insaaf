@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
+=======
+import { Wallet } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -36,8 +40,16 @@ export default function Accounts() {
 
   return (
     <div className="space-y-4">
+<<<<<<< HEAD
       <div className="flex flex-wrap gap-2 justify-between items-center">
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Accounts</h1>
+=======
+      <div className="flex flex-wrap gap-2 justify-between items-center page-header">
+        <div className="flex items-center gap-3">
+          <div className="page-header-icon"><Wallet size={20} /></div>
+          <h1 className="text-2xl font-semibold">Accounts</h1>
+        </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         {isAdmin && <button className="btn-primary" onClick={() => setShowTransfer(!showTransfer)}>Internal transfer</button>}
       </div>
 
@@ -69,11 +81,19 @@ export default function Accounts() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {(accounts ?? []).map((a: any) => (
+<<<<<<< HEAD
           <div key={a.id} className={`card text-left transition-shadow hover:shadow-card-hover ${selected === a.id ? "ring-2 ring-brand-500" : ""}`}>
             <button className="w-full text-left" onClick={() => setSelected(a.id)}>
               <div className="text-sm text-gray-500 dark:text-slate-400">{a.type}</div>
               <div className="font-medium">{a.name}</div>
               <div className="num text-xl font-display font-semibold mt-2">{currency(a.current_balance)}</div>
+=======
+          <div key={a.id} className={`card text-left ${selected === a.id ? "ring-2 ring-brand-500" : ""}`}>
+            <button className="w-full text-left" onClick={() => setSelected(a.id)}>
+              <div className="text-sm text-gray-500 dark:text-slate-400">{a.type}</div>
+              <div className="font-medium">{a.name}</div>
+              <div className="text-xl font-semibold mt-2">{currency(a.current_balance)}</div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
             </button>
             {isAdmin && (
               <button

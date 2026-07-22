@@ -32,7 +32,10 @@ const createProductSchema = z.object({
   reorder_level: z.number().int().nonnegative().optional(),
   opening_stock_qty: z.number().int().nonnegative().optional(),
   is_returnable: z.boolean().optional(),
+<<<<<<< HEAD
   note: z.string().optional(),
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 // Admin-only create/edit/delete of gas type/size definitions (Screen 6).

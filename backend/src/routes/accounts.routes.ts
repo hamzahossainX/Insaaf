@@ -14,14 +14,22 @@ accountsRouter.get(
   asyncHandler(async (req, res) => res.json(await getAccountLedger(req.params.id)))
 );
 
+<<<<<<< HEAD
 const createAccountSchema = z.object({ name: z.string().min(1), type: z.string().min(1), opening_balance: z.number().nonnegative().default(0), note: z.string().optional() });
+=======
+const createAccountSchema = z.object({ name: z.string().min(1), type: z.string().min(1), opening_balance: z.number().nonnegative().default(0) });
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
 accountsRouter.post(
   "/",
   requireAdmin,
   asyncHandler(async (req, res) => {
     const body = createAccountSchema.parse(req.body);
+<<<<<<< HEAD
     res.status(201).json(await createAccount(body.name, body.type, body.opening_balance, req.user!.sub, body.note));
+=======
+    res.status(201).json(await createAccount(body.name, body.type, body.opening_balance, req.user!.sub));
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   })
 );
 

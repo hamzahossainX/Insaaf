@@ -1,4 +1,5 @@
 import "dotenv/config";
+<<<<<<< HEAD
 import express from "express";
 import cors from "cors";
 import { authRouter } from "./routes/auth.routes";
@@ -42,6 +43,9 @@ app.use("/api/wings", wingsRouter);
 app.use("/api/reports", reportsRouter);
 
 app.use(errorMiddleware);
+=======
+import app from "./app";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

@@ -10,7 +10,10 @@ export interface RecordCylinderReturnInput {
   quantity_returned: number;
   user_id: string;
   date?: string;
+<<<<<<< HEAD
   note?: string;
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 }
 
 /**
@@ -35,7 +38,10 @@ export async function recordCylinderReturn(input: RecordCylinderReturnInput) {
         quantity_returned: input.quantity_returned,
         linked_loan_id: loan.id,
         date: input.date ? new Date(input.date) : undefined,
+<<<<<<< HEAD
         note: input.note || undefined,
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       },
     });
 

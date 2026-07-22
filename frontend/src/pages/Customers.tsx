@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { Eye, Trash2 } from "lucide-react";
+=======
+import { Eye, Trash2, Users } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -33,8 +37,16 @@ function CustomerList() {
 
   return (
     <div className="space-y-4">
+<<<<<<< HEAD
       <div className="flex flex-wrap gap-2 justify-between items-center">
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Customers</h1>
+=======
+      <div className="flex flex-wrap gap-2 justify-between items-center page-header">
+        <div className="flex items-center gap-3">
+          <div className="page-header-icon"><Users size={20} /></div>
+          <h1 className="text-2xl font-semibold">Customers</h1>
+        </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         <button className="btn-primary" onClick={() => setShowForm(!showForm)}>+ New customer</button>
       </div>
 
@@ -92,9 +104,14 @@ function NewCustomerForm({ onDone }: { onDone: () => void }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+<<<<<<< HEAD
   const [notes, setNotes] = useState("");
   const create = useMutation({
     mutationFn: () => api.post("/customers", { name, phone, address, notes: notes || undefined }),
+=======
+  const create = useMutation({
+    mutationFn: () => api.post("/customers", { name, phone, address }),
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onSuccess: onDone,
   });
   return (
@@ -102,7 +119,10 @@ function NewCustomerForm({ onDone }: { onDone: () => void }) {
       <input className="input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
       <input className="input" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
       <input className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+<<<<<<< HEAD
       <input className="input sm:col-span-3" placeholder="Note (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       <button className="btn-primary sm:col-span-3" disabled={!name || !phone} onClick={() => create.mutate()}>Save customer</button>
     </div>
   );
@@ -117,18 +137,28 @@ function CustomerProfile() {
   const { data: accounts } = useQuery({ queryKey: ["accounts"], queryFn: () => api.get("/accounts").then((r) => r.data) });
   const [payAmount, setPayAmount] = useState<number | "">("");
   const [payAccount, setPayAccount] = useState("");
+<<<<<<< HEAD
   const [payNote, setPayNote] = useState("");
   const [payError, setPayError] = useState("");
 
   const recordPayment = useMutation({
     mutationFn: () => api.post("/customers/due-payments", { customer_id: id, amount: Number(payAmount || 0), received_into_account_id: payAccount, note: payNote || undefined }),
+=======
+  const [payError, setPayError] = useState("");
+
+  const recordPayment = useMutation({
+    mutationFn: () => api.post("/customers/due-payments", { customer_id: id, amount: Number(payAmount || 0), received_into_account_id: payAccount }),
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["customer", id] });
       qc.invalidateQueries({ queryKey: ["customers"] });
       qc.invalidateQueries({ queryKey: ["accounts"] });
       qc.invalidateQueries({ queryKey: ["reports"] });
       setPayAmount("");
+<<<<<<< HEAD
       setPayNote("");
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       setPayError("");
     },
     onError: (e: any) => setPayError(e?.response?.data?.error ?? "Failed to record payment"),
@@ -164,12 +194,20 @@ function CustomerProfile() {
       </div>
       <div className="flex justify-between items-start">
         <div>
+<<<<<<< HEAD
           <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">{customer.name}</h1>
+=======
+          <h1 className="text-2xl font-semibold">{customer.name}</h1>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
           <div className="text-sm text-gray-500 dark:text-slate-400">{customer.phone} · {customer.address}</div>
         </div>
         <div className="text-right">
           <div className="text-xs text-gray-500 dark:text-slate-400">Due balance</div>
+<<<<<<< HEAD
           <div className={`num text-xl font-display font-semibold ${dueBalance > 0 ? "text-red-600 dark:text-red-400" : ""}`}>
+=======
+          <div className={`text-xl font-semibold ${dueBalance > 0 ? "text-red-600 dark:text-red-400" : ""}`}>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
             {currency(customer.current_due_balance)}
           </div>
         </div>
@@ -229,10 +267,13 @@ function CustomerProfile() {
                 {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
               </select>
             </div>
+<<<<<<< HEAD
             <div>
               <label className="label">Note (optional)</label>
               <input className="input" value={payNote} onChange={(e) => setPayNote(e.target.value)} placeholder="e.g. Cash collected on-site" />
             </div>
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
             <button
               className="btn-primary"
               disabled={!payAmount || Number(payAmount) <= 0 || !payAccount || recordPayment.isPending}
@@ -283,7 +324,11 @@ function CustomerProfile() {
         {due_payments.length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">No payments recorded yet.</div>}
         <div className="table-scroll">
         <table className="table-base">
+<<<<<<< HEAD
           <thead><tr><th>Date</th><th>Amount</th><th>Received into</th><th>Recorded by</th><th>Note</th></tr></thead>
+=======
+          <thead><tr><th>Date</th><th>Amount</th><th>Received into</th><th>Recorded by</th></tr></thead>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
           <tbody>
             {due_payments.map((p: any) => (
               <tr key={p.id}>
@@ -291,7 +336,10 @@ function CustomerProfile() {
                 <td className="text-green-700 dark:text-green-400 font-medium">{currency(p.amount)}</td>
                 <td>{p.received_into_account?.name ?? "—"}</td>
                 <td>{p.user?.name ?? "—"}</td>
+<<<<<<< HEAD
                 <td className="text-gray-500 dark:text-slate-400">{p.note ?? ""}</td>
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
               </tr>
             ))}
           </tbody>

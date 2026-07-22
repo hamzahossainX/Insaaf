@@ -16,7 +16,10 @@ const createUserSchema = z.object({
   password: z.string().min(6),
   role: z.enum(["ADMIN", "MEMBER"]),
   wing_id: z.string().optional(),
+<<<<<<< HEAD
   note: z.string().optional(),
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 usersRouter.post(

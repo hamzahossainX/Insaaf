@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { api, currency } from "../api/client";
 import { downloadCsv, printFriendlyDownload } from "../lib/csv";
 
 const TABS = ["Sales", "Receivables", "Supplier Payables", "Stock", "Expenses", "Payroll", "Loans & Advances", "Profit Summary"] as const;
+=======
+import { BarChart3 } from "lucide-react";
+import { api, currency } from "../api/client";
+import { downloadCsv, printFriendlyDownload } from "../lib/csv";
+
+const TABS = ["Sales", "Receivables", "Stock", "Expenses", "Payroll", "Loans & Advances", "Profit Summary"] as const;
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 type Tab = (typeof TABS)[number];
 
 export default function Reports() {
@@ -15,7 +23,14 @@ export default function Reports() {
 
   return (
     <div className="space-y-4">
+<<<<<<< HEAD
       <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Reports</h1>
+=======
+      <div className="page-header">
+        <div className="page-header-icon"><BarChart3 size={20} /></div>
+        <h1 className="text-2xl font-semibold">Reports</h1>
+      </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
       <div className="flex gap-2 flex-wrap">
         {TABS.map((t) => (
@@ -46,7 +61,10 @@ export default function Reports() {
 
       {tab === "Sales" && <SalesReport wingId={wingId} from={from} to={to} />}
       {tab === "Receivables" && <ReceivablesReport />}
+<<<<<<< HEAD
       {tab === "Supplier Payables" && <SupplierPayablesReport from={from} to={to} />}
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       {tab === "Stock" && <StockReport wingId={wingId} />}
       {tab === "Expenses" && <ExpensesReport wingId={wingId} from={from} to={to} />}
       {tab === "Payroll" && <PayrollReport wingId={wingId} />}
@@ -204,6 +222,7 @@ function ReceivablesReport() {
   );
 }
 
+<<<<<<< HEAD
 function SupplierPayablesReport({ from, to }: { from: string; to: string }) {
   const { data: payables } = useQuery({ queryKey: ["report-supplier-payables"], queryFn: () => api.get("/reports/supplier-payables").then((r) => r.data) });
   const { data: activity } = useQuery({
@@ -289,6 +308,8 @@ function SupplierPayablesReport({ from, to }: { from: string; to: string }) {
   );
 }
 
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 function StockReport({ wingId }: { wingId: string }) {
   const { data } = useQuery({
     queryKey: ["report-stock", wingId],
@@ -547,7 +568,11 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
     <div className="card">
       <div className="text-xs text-gray-500 dark:text-slate-400">{label}</div>
+<<<<<<< HEAD
       <div className="num text-lg font-display font-semibold mt-1">{value}</div>
+=======
+      <div className="text-lg font-semibold mt-1">{value}</div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
     </div>
   );
 }

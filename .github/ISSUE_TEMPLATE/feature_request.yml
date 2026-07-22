@@ -1,0 +1,68 @@
+name: Feature Request
+description: Suggest a new feature or improvement for Insaaf ERP
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! Please search existing issues first before opening a new one.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / Motivation
+      description: What problem does this solve? What business need does it address?
+      placeholder: As a [role], I want [feature] so that [benefit]...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like, including any UI/UX ideas.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or workarounds you've considered.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Authentication / Users
+        - Dashboard
+        - Sales / POS
+        - Customers
+        - Products / Stock
+        - Cylinder Returns
+        - Accounts
+        - Expenses
+        - Payroll
+        - Employee Loans
+        - Reports
+        - Settings
+        - Backend API
+        - Deployment / DevOps
+        - New Wing (LPG / Retail)
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority (from your perspective)
+      options:
+        - 🔴 Critical — blocking daily operations
+        - 🟠 High — significant pain point
+        - 🟡 Medium — nice to have soon
+        - 🟢 Low — future improvement
+    validations:
+      required: true

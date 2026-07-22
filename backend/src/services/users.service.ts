@@ -19,7 +19,10 @@ export interface CreateUserInput {
   password: string;
   role: Role;
   wing_id?: string;
+<<<<<<< HEAD
   note?: string;
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
   created_by: string;
 }
 
@@ -35,7 +38,10 @@ export async function createUser(input: CreateUserInput) {
         password_hash,
         role: input.role,
         wing_id: input.wing_id,
+<<<<<<< HEAD
         note: input.note || undefined,
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       },
     });
     await writeAuditLog(tx, { user_id: input.created_by, action: "CREATE", entity: "User", entity_id: user.id });

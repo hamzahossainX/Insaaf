@@ -30,7 +30,10 @@ const repaymentSchema = z.object({
   amount: z.number().positive(),
   received_into_account_id: z.string(),
   date: z.string().optional(),
+<<<<<<< HEAD
   note: z.string().optional(),
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 });
 
 employeeLoansRouter.post(

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+<<<<<<< HEAD
 import { PackagePlus, Trash2 } from "lucide-react";
+=======
+import { PackagePlus, Trash2, Boxes } from "lucide-react";
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 import { api, currency } from "../api/client";
 import { useAuth } from "../lib/auth";
 
@@ -33,8 +37,16 @@ export default function Products() {
 
   return (
     <div className="space-y-4">
+<<<<<<< HEAD
       <div className="flex flex-wrap gap-2 justify-between items-center">
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Products & Stock — Oxygen</h1>
+=======
+      <div className="flex flex-wrap gap-2 justify-between items-center page-header">
+        <div className="flex items-center gap-3">
+          <div className="page-header-icon"><Boxes size={20} /></div>
+          <h1 className="text-2xl font-semibold">Products & Stock — Oxygen</h1>
+        </div>
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
         {isAdmin && <button className="btn-primary" onClick={() => setShowNewProduct(!showNewProduct)}>+ New product</button>}
       </div>
 
@@ -124,7 +136,10 @@ function NewProductForm({ onDone }: { onDone: () => void }) {
   const [price, setPrice] = useState<number | "">("");
   const [opening, setOpening] = useState<number | "">("");
   const [isReturnable, setIsReturnable] = useState(true);
+<<<<<<< HEAD
   const [note, setNote] = useState("");
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
 
   const create = useMutation({
     mutationFn: () =>
@@ -136,7 +151,10 @@ function NewProductForm({ onDone }: { onDone: () => void }) {
         unit_sale_price: price,
         opening_stock_qty: opening || 0,
         is_returnable: isReturnable,
+<<<<<<< HEAD
         note: note || undefined,
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       }),
     onSuccess: onDone,
   });
@@ -148,7 +166,10 @@ function NewProductForm({ onDone }: { onDone: () => void }) {
       <div><label className="label">Cost price</label><input className="input" type="number" value={cost} onChange={(e) => setCost(e.target.value === "" ? "" : Number(e.target.value))} /></div>
       <div><label className="label">Sale price</label><input className="input" type="number" value={price} onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))} /></div>
       <div><label className="label">Opening stock</label><input className="input" type="number" value={opening} onChange={(e) => setOpening(e.target.value === "" ? "" : Number(e.target.value))} /></div>
+<<<<<<< HEAD
       <div className="sm:col-span-2 lg:col-span-5"><label className="label">Note (optional)</label><input className="input" value={note} onChange={(e) => setNote(e.target.value)} /></div>
+=======
+>>>>>>> c79828a843ea31b95a185f8d1b10f9418bdc3cac
       <label className="sm:col-span-2 lg:col-span-5 flex items-center gap-2 text-sm">
         <input type="checkbox" checked={isReturnable} onChange={(e) => setIsReturnable(e.target.checked)} />
         Returnable cylinder? (uncheck for non-cylinder items like a stove — those show up under "Other Item" on New Sale and never come back to stock once sold)
