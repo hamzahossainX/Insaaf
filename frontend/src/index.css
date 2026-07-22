@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* Tells the browser which palette to use for native UI it renders itself —
+   select dropdown lists, date/number pickers, checkboxes, scrollbars — so they
+   don't flash white inside an otherwise dark page. */
+:root { color-scheme: light; }
+.dark { color-scheme: dark; }
+
+body {
+  @apply font-sans antialiased;
+  /* Light: soft neutral canvas, not stark white, so cards read as elevated.
+     Dark: deep slate rather than pure black — a hallmark of premium dark UI
+     (Linear/Vercel-style), giving cards room to sit visibly above the page. */
+  @apply bg-gray-50 text-gray-900;
+  @apply dark:bg-slate-950 dark:text-slate-100;
+}
+
+h1, h2, h3 { @apply font-display; }
+
+/* Financial figures and IDs read better with fixed-width digits — numbers
+   don't visually jitter/reflow as they update. */
+.num { font-variant-numeric: tabular-nums; }
+
+/* Smooth theme transitions without animating every property on every element */
+body, .card, .btn, .input, .table-base, aside, header {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-card border border-gray-200/80 p-4;
+  @apply dark:bg-slate-900 dark:border-slate-800 dark:shadow-premium-dark;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-150;
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-500 dark:focus-visible:ring-offset-slate-950;
+}
+.btn-primary {
+  @apply btn bg-brand-gradient text-white shadow-sm hover:shadow-glow hover:-translate-y-px active:translate-y-0;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:hover:translate-y-0;
+  @apply dark:text-white dark:font-semibold;
+}
+.btn-secondary {
+  @apply btn bg-gray-100 text-gray-700 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  @apply dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:border dark:border-slate-700;
+}
+
+.input {
+  @apply w-full min-w-0 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 bg-white;
+  @apply focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition-shadow;
+  @apply dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500;
+}
+
+/* Chrome/Safari autofill (e.g. saved phone numbers) forces its own white
+   background and ignores normal CSS — this repaints it to match dark mode. */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f1f5f9;
+  box-shadow: 0 0 0px 1000px #0f172a inset;
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+input[type="checkbox"], input[type="radio"] {
+  @apply accent-brand-600 dark:accent-brand-400;
+}
+
+.label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+  @apply dark:text-slate-300;
+}
+
+.table-base { @apply w-full text-sm text-left; }
+.table-base th {
+  @apply px-3 py-2.5 font-semibold text-gray-500 bg-gray-50/80 border-b border-gray-200 whitespace-nowrap text-xs uppercase tracking-wide;
+  @apply dark:text-slate-400 dark:bg-slate-800/40 dark:border-slate-800;
+}
+.table-base td {
+  @apply px-3 py-2.5 border-b border-gray-100;
+  @apply dark:border-slate-800/70;
+}
+.table-base tbody tr { @apply hover:bg-brand-50/50 dark:hover:bg-slate-800/50 transition-colors; }
+.table-base tfoot td { @apply dark:bg-slate-800/60; }
+
+/* Scrollable table wrapper — used on any wide table so it degrades to horizontal
+   scroll on small screens instead of squashing or overflowing the viewport. */
+.table-scroll { @apply overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0; }
+
+/* Compact icon-only action button, used for row-level actions (view/delete) in
+   tables so they stay usable and well-positioned at any screen width. */
+.icon-btn {
+  @apply inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700;
+  @apply dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200;
+  @apply disabled:opacity-40 disabled:pointer-events-none transition-colors;
+}
+.icon-btn-danger {
+  @apply icon-btn hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400;
+}
+
+/* Small pill/badge used for status and category labels */
+.badge {
+  @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
+}
+
+/* Printing: always render on plain white with black text regardless of the
+   active theme, hide navigation/controls, and flatten cards to simple bordered
+   sections instead of grey-filled boxes — cleaner and more ink-friendly. */
+@media print {
+  aside, header.lg\:hidden, .btn-primary, .btn-secondary, .icon-btn, .icon-btn-danger, nav {
+    display: none !important;
+  }
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main { padding: 0 !important; }
+  .card {
+    background: #fff !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+    color: #000 !important;
+  }
+  .table-base th {
+    background: #f3f4f6 !important;
+    color: #000 !important;
+    border-color: #d1d5db !important;
+  }
+  .table-base td {
+    color: #000 !important;
+    border-color: #e5e7eb !important;
+  }
+  .table-base tfoot td { background: #f9fafb !important; }
+  .table-scroll { overflow: visible !important; }
+  a[href]::after { content: none !important; }
+}
