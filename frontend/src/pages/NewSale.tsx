@@ -1,8 +1,9 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, currency } from "../api/client";
+import { api } from "../api/client";
 import { useAuth } from "../lib/auth";
 import CustomerAutocomplete from "../components/CustomerAutocomplete";
+import { useI18n } from "../lib/i18n";
 
 type SaleType = "GAS_ONLY" | "GAS_PLUS_CYLINDER" | "CYLINDER_EXCHANGE" | "OTHER_ITEM";
 
@@ -14,6 +15,7 @@ interface LineItem {
 
 export default function NewSale() {
   const { user } = useAuth();
+  const { t, formatCurrency, errorMessage } = useI18n();
   const qc = useQueryClient();
 
   const { data: products } = useQuery({
@@ -33,8 +35,8 @@ export default function NewSale() {
   const [paidIntoAccount, setPaidIntoAccount] = useState("");
   const [deliveryEmployeeId, setDeliveryEmployeeId] = useState("");
   const [note, setNote] = useState("");
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<unknown>(null);
 
   // OTHER_ITEM (e.g. a stove) picks from non-returnable catalog products, exactly like the
   // gas sale types pick from returnable cylinder products — same dropdown UX, different list.
@@ -65,8 +67,8 @@ export default function NewSale() {
         note: note || undefined,
       }),
     onSuccess: () => {
-      setSuccess("Sale recorded.");
-      setError("");
+      setSuccess(true);
+      setError(null);
       setLineItems([]);
       setPaidNow("");
       setDeliveryEmployeeId("");
@@ -75,8 +77,8 @@ export default function NewSale() {
       qc.invalidateQueries({ queryKey: ["customers"] });
     },
     onError: (e: any) => {
-      setError(e?.response?.data?.error ?? "Failed to record sale");
-      setSuccess("");
+      setError(e);
+      setSuccess(false);
     },
   });
 
@@ -112,42 +114,42 @@ export default function NewSale() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">New Sale</h1>
+      <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">{t("sales.title")}</h1>
 
-      {success && <div className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-lg px-3 py-2">{success}</div>}
-      {error && <div className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg px-3 py-2">{error}</div>}
+      {success && <div className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded-lg px-3 py-2">{t("sales.success")}</div>}
+      {error !== null && <div className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg px-3 py-2">{errorMessage(error, "sales.error")}</div>}
 
       <div className="card space-y-4">
         <div>
-          <label className="label">Customer</label>
+          <label className="label">{t("common.customer")}</label>
           <CustomerAutocomplete value={customerId} onChange={(id) => setCustomerId(id)} />
         </div>
 
         <div>
-          <label className="label">Sale type</label>
+          <label className="label">{t("sales.saleType")}</label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {(["GAS_ONLY", "GAS_PLUS_CYLINDER", "CYLINDER_EXCHANGE", "OTHER_ITEM"] as SaleType[]).map((t) => (
+            {(["GAS_ONLY", "GAS_PLUS_CYLINDER", "CYLINDER_EXCHANGE", "OTHER_ITEM"] as SaleType[]).map((saleKind) => (
               <button
-                key={t}
+                key={saleKind}
                 type="button"
-                className={`btn ${saleType === t ? "bg-brand-600 text-white" : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300"}`}
-                onClick={() => changeSaleType(t)}
+                className={`btn ${saleType === saleKind ? "bg-brand-600 text-white" : "bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300"}`}
+                onClick={() => changeSaleType(saleKind)}
               >
-                {label(t)}
+                {t(saleTypeLabelKey[saleKind])}
               </button>
             ))}
           </div>
-          <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">{explain(saleType)}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">{t(saleTypeHelpKey[saleType])}</p>
         </div>
 
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="label mb-0">Line items</label>
-            <button type="button" className="btn-secondary" onClick={addLine} disabled={availableProducts.length === 0}>+ Add item</button>
+            <label className="label mb-0">{t("sales.lineItems")}</label>
+            <button type="button" className="btn-secondary" onClick={addLine} disabled={availableProducts.length === 0}>{t("sales.addItem")}</button>
           </div>
           {saleType === "OTHER_ITEM" && availableProducts.length === 0 && (
             <div className="text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-lg px-3 py-2 mb-2">
-              No non-cylinder products yet. Add one from the Products page first — uncheck "Returnable cylinder?" when creating it (e.g. a stove).
+              {t("sales.noOtherProducts")}
             </div>
           )}
           <div className="space-y-3 sm:space-y-2">
@@ -176,22 +178,22 @@ export default function NewSale() {
                   value={li.unit_price}
                   onChange={(e) => updateLine(idx, { unit_price: e.target.value === "" ? "" : Number(e.target.value) })}
                 />
-                <div className="sm:col-span-1 text-sm text-right w-20 sm:w-auto">{currency(Number(li.quantity || 0) * Number(li.unit_price || 0))}</div>
-                <button type="button" className="sm:col-span-1 text-red-600 dark:text-red-400 text-sm px-1" onClick={() => removeLine(idx)}>✕</button>
+                <div className="sm:col-span-1 text-sm text-right w-20 sm:w-auto">{formatCurrency(Number(li.quantity || 0) * Number(li.unit_price || 0))}</div>
+                <button type="button" aria-label={t("common.delete")} className="sm:col-span-1 text-red-600 dark:text-red-400 text-sm px-1" onClick={() => removeLine(idx)}>✕</button>
               </div>
             ))}
-            {lineItems.length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">No items added yet.</div>}
+            {lineItems.length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">{t("sales.noItems")}</div>}
           </div>
         </div>
 
         <div className="flex justify-between border-t border-gray-200 dark:border-slate-700 pt-3">
-          <span className="font-medium">Total</span>
-          <span className="font-semibold text-lg">{currency(total)}</span>
+          <span className="font-medium">{t("common.total")}</span>
+          <span className="font-semibold text-lg">{formatCurrency(total)}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="label">Paid now</label>
+            <label className="label">{t("sales.paidNow")}</label>
             <input
               className="input"
               type="number"
@@ -202,9 +204,9 @@ export default function NewSale() {
             />
           </div>
           <div>
-            <label className="label">Into account</label>
+            <label className="label">{t("sales.intoAccount")}</label>
             <select className="input" value={paidIntoAccount} onChange={(e) => setPaidIntoAccount(e.target.value)} disabled={paidNowNum === 0}>
-              <option value="">Select account...</option>
+              <option value="">{t("common.selectAccount")}</option>
               {(accounts ?? []).map((a: any) => (
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
@@ -213,9 +215,9 @@ export default function NewSale() {
         </div>
 
         <div>
-          <label className="label">Delivery man (optional)</label>
+          <label className="label">{t("sales.deliveryEmployee")}</label>
           <select className="input" value={deliveryEmployeeId} onChange={(e) => setDeliveryEmployeeId(e.target.value)}>
-            <option value="">Not assigned</option>
+            <option value="">{t("sales.notAssigned")}</option>
             {(employees ?? []).map((e: any) => (
               <option key={e.id} value={e.id}>{e.name} — {e.role}</option>
             ))}
@@ -223,13 +225,13 @@ export default function NewSale() {
         </div>
 
         <div>
-          <label className="label">Note (optional)</label>
-          <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Any extra context for this sale..." />
+          <label className="label">{t("common.noteOptional")}</label>
+          <input className="input" value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("sales.notePlaceholder")} />
         </div>
 
         <div className="flex justify-between text-sm text-gray-600 dark:text-slate-300">
-          <span>Due</span>
-          <span className="font-medium">{currency(due)}</span>
+          <span>{t("common.due")}</span>
+          <span className="font-medium">{formatCurrency(due)}</span>
         </div>
 
         <button
@@ -237,26 +239,26 @@ export default function NewSale() {
           disabled={!canSubmit || createSale.isPending}
           onClick={() => createSale.mutate()}
         >
-          {createSale.isPending ? "Submitting..." : "Complete sale"}
+          {createSale.isPending ? t("common.submitting") : t("sales.complete")}
         </button>
       </div>
     </div>
   );
 }
 
-function label(t: SaleType) {
-  if (t === "GAS_ONLY") return "Gas only";
-  if (t === "GAS_PLUS_CYLINDER") return "Gas + Cylinder";
-  if (t === "CYLINDER_EXCHANGE") return "Cylinder Exchange";
-  return "Other Item";
-}
+const saleTypeLabelKey: Record<SaleType, string> = {
+  GAS_ONLY: "sales.gasOnly",
+  GAS_PLUS_CYLINDER: "sales.gasCylinder",
+  CYLINDER_EXCHANGE: "sales.exchange",
+  OTHER_ITEM: "sales.otherItem"
+};
 
-function explain(t: SaleType) {
-  if (t === "GAS_ONLY") return "Cylinder leaves the premises on loan — stock is deducted now and comes back when the customer returns the cylinder.";
-  if (t === "GAS_PLUS_CYLINDER") return "Cylinder is sold outright — stock is permanently deducted; no loan is created.";
-  if (t === "CYLINDER_EXCHANGE") return "Cylinder changes hands as part of an exchange — stock is permanently deducted; no loan is created.";
-  return "Non-cylinder products from the catalog (e.g. a stove) — picked the same way as gas. Stock is permanently deducted; it never comes back.";
-}
+const saleTypeHelpKey: Record<SaleType, string> = {
+  GAS_ONLY: "sales.gasOnlyHelp",
+  GAS_PLUS_CYLINDER: "sales.gasCylinderHelp",
+  CYLINDER_EXCHANGE: "sales.exchangeHelp",
+  OTHER_ITEM: "sales.otherItemHelp"
+};
 
 function round2(n: number) {
   return Math.round(n * 100) / 100;
