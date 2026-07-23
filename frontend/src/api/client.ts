@@ -28,8 +28,3 @@ api.interceptors.response.use(
     return Promise.reject(err);
   }
 );
-
-export function currency(amount: number | string): string {
-  const n = typeof amount === "string" ? Number(amount) : amount;
-  return `৳ ${n.toLocaleString("en-BD", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}

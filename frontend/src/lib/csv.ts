@@ -1,9 +1,9 @@
 /** Converts an array of flat objects to CSV and triggers a browser download.
  * This is the "Excel" half of "Exportable to PDF/Excel" — CSV opens directly in Excel/Sheets.
  * For PDF, printFriendlyDownload() below opens the browser print dialog (Save as PDF). */
-export function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
+export function downloadCsv(filename: string, rows: Record<string, unknown>[], emptyMessage: string) {
   if (rows.length === 0) {
-    alert("Nothing to export yet — adjust your filters and try again.");
+    alert(emptyMessage);
     return;
   }
   const headers = Object.keys(rows[0]);
