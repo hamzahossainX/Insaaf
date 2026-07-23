@@ -8,7 +8,7 @@ Auth: `Authorization: Bearer <JWT>` on every route except `/auth/login`.
 |---|---|---|
 | POST | `/auth/login` | `{ phone, password }` → `{ token, user }` |
 | GET | `/auth/me` | Returns the authenticated user's current server-side role and wing |
-| POST | `/auth/change-password` | `{ current_password, new_password }`; minimum 12 characters and revokes existing sessions |
+| POST | `/auth/change-password` | `{ current_password, new_password }`; minimum 8 characters and revokes existing sessions |
 
 ## Sales (POS)
 | Method | Path | Role | Notes |

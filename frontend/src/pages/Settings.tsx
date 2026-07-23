@@ -42,7 +42,7 @@ export default function Settings() {
       <div className="card grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div><label className="label">Name</label><input className="input" value={name} onChange={(e) => setName(e.target.value)} /></div>
         <div><label className="label">Phone</label><input className="input" value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
-        <div><label className="label">Password</label><input className="input" type="password" minLength={12} maxLength={72} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+        <div><label className="label">Password</label><input className="input" type="password" minLength={8} maxLength={72} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
         <div>
           <label className="label">Role</label>
           <select className="input" value={role} onChange={(e) => setRole(e.target.value as any)}>

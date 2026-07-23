@@ -10,7 +10,7 @@ export const authRouter = Router();
 const loginSchema = z.object({ phone: z.string().min(1), password: z.string().min(1) });
 const changePasswordSchema = z.object({
   current_password: z.string().min(1),
-  new_password: z.string().min(12).max(72),
+  new_password: z.string().min(8).max(72),
 }).strict();
 
 authRouter.post(

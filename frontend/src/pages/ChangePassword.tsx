@@ -39,7 +39,7 @@ export default function ChangePassword() {
       <div>
         <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Change password</h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
-          Use at least 12 characters. Changing it signs out every existing session for this account.
+          Use at least 8 characters. Changing it signs out every existing session for this account.
         </p>
       </div>
       <form onSubmit={submit} className="card space-y-4">
@@ -50,11 +50,11 @@ export default function ChangePassword() {
         </div>
         <div>
           <label className="label">New password</label>
-          <input className="input" type="password" autoComplete="new-password" minLength={12} maxLength={72} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
+          <input className="input" type="password" autoComplete="new-password" minLength={8} maxLength={72} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required />
         </div>
         <div>
           <label className="label">Confirm new password</label>
-          <input className="input" type="password" autoComplete="new-password" minLength={12} maxLength={72} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required />
+          <input className="input" type="password" autoComplete="new-password" minLength={8} maxLength={72} value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required />
         </div>
         <button className="btn-primary w-full" disabled={saving} type="submit">
           {saving ? "Changing password..." : "Change password"}

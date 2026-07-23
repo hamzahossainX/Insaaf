@@ -13,7 +13,7 @@ const createUserSchema = z.object({
   name: z.string().trim().min(1).max(100),
   phone: z.string().trim().min(1).max(32),
   email: z.string().email().optional(),
-  password: z.string().min(12).max(72),
+  password: z.string().min(8).max(72),
   role: z.enum(["ADMIN", "MEMBER"]),
   wing_id: z.string().optional(),
   note: z.string().trim().max(2000).optional(),
