@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Eye, Trash2 } from "lucide-react";
-import { api, currency } from "../api/client";
+import { api } from "../api/client";
 import { useAuth } from "../lib/auth";
+import { useI18n } from "../lib/i18n";
 
 export default function SuppliersRoutes() {
   return (
@@ -16,6 +17,7 @@ export default function SuppliersRoutes() {
 
 function SupplierList() {
   const { isAdmin } = useAuth();
+  const { t, formatCurrency, errorMessage } = useI18n();
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
   const [hasPayableOnly, setHasPayableOnly] = useState(false);
@@ -28,23 +30,23 @@ function SupplierList() {
   const remove = useMutation({
     mutationFn: (id: string) => api.delete(`/suppliers/${id}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["suppliers"] }),
-    onError: (e: any) => alert(e?.response?.data?.error ?? "Could not delete this supplier"),
+    onError: (error) => alert(errorMessage(error, "suppliers.deleteError")),
   });
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap gap-2 justify-between items-center">
-        <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">Suppliers</h1>
-        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>+ New supplier</button>
+        <h1 className="text-2xl font-display font-semibold text-gray-900 dark:text-slate-100">{t("suppliers.title")}</h1>
+        <button className="btn-primary" onClick={() => setShowForm(!showForm)}>{t("suppliers.new")}</button>
       </div>
 
       {showForm && <NewSupplierForm onDone={() => { setShowForm(false); refetch(); }} />}
 
       <div className="flex gap-3">
-        <input className="input max-w-xs" placeholder="Search name or phone..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        <input className="input max-w-xs" placeholder={t("suppliers.search")} value={search} onChange={(e) => setSearch(e.target.value)} />
         <label className="flex items-center gap-2 text-sm">
           <input type="checkbox" checked={hasPayableOnly} onChange={(e) => setHasPayableOnly(e.target.checked)} />
-          Has payable due only
+          {t("suppliers.hasPayableOnly")}
         </label>
       </div>
 
@@ -52,7 +54,7 @@ function SupplierList() {
         <div className="table-scroll">
         <table className="table-base">
           <thead>
-            <tr><th>Name</th><th>Phone</th><th>Payable balance</th><th></th></tr>
+            <tr><th>{t("common.name")}</th><th>{t("common.phone")}</th><th>{t("suppliers.payableBalance")}</th><th><span className="sr-only">{t("common.actions")}</span></th></tr>
           </thead>
           <tbody>
             {(suppliers ?? []).map((s: any) => (
@@ -60,19 +62,19 @@ function SupplierList() {
                 <td>{s.name}</td>
                 <td>{s.phone}</td>
                 <td className={Number(s.current_payable_balance) > 0 ? "text-red-600 dark:text-red-400 font-medium" : Number(s.current_payable_balance) < 0 ? "text-green-700 dark:text-green-400 font-medium" : ""}>
-                  {currency(s.current_payable_balance)}
-                  {Number(s.current_payable_balance) < 0 && <span className="text-xs text-gray-400 ml-1">(credit)</span>}
+                  {formatCurrency(s.current_payable_balance)}
+                  {Number(s.current_payable_balance) < 0 && <span className="text-xs text-gray-400 ml-1">({t("common.credit")})</span>}
                 </td>
                 <td>
                   <div className="flex items-center gap-1">
-                    <Link className="icon-btn" to={`/suppliers/${s.id}`} title="View profile">
+                    <Link className="icon-btn" to={`/suppliers/${s.id}`} title={t("suppliers.viewProfile")}>
                       <Eye size={16} />
                     </Link>
                     {isAdmin && (
                       <button
                         className="icon-btn-danger"
-                        title="Delete supplier"
-                        onClick={() => { if (confirm(`Delete supplier "${s.name}"? This can't be undone.`)) remove.mutate(s.id); }}
+                        title={t("suppliers.delete")}
+                        onClick={() => { if (confirm(t("suppliers.deleteConfirm", { name: s.name }))) remove.mutate(s.id); }}
                       >
                         <Trash2 size={16} />
                       </button>
@@ -82,7 +84,7 @@ function SupplierList() {
               </tr>
             ))}
             {(suppliers ?? []).length === 0 && (
-              <tr><td colSpan={4} className="text-center text-gray-400 dark:text-slate-500 py-4">No suppliers yet.</td></tr>
+              <tr><td colSpan={4} className="text-center text-gray-400 dark:text-slate-500 py-4">{t("suppliers.empty")}</td></tr>
             )}
           </tbody>
         </table>
@@ -93,6 +95,7 @@ function SupplierList() {
 }
 
 function NewSupplierForm({ onDone }: { onDone: () => void }) {
+  const { t } = useI18n();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -103,11 +106,11 @@ function NewSupplierForm({ onDone }: { onDone: () => void }) {
   });
   return (
     <div className="card grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <input className="input" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
-      <input className="input" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-      <input className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
-      <input className="input sm:col-span-3" placeholder="Note (optional)" value={notes} onChange={(e) => setNotes(e.target.value)} />
-      <button className="btn-primary sm:col-span-3" disabled={!name || !phone} onClick={() => create.mutate()}>Save supplier</button>
+      <input className="input" placeholder={t("common.name")} value={name} onChange={(e) => setName(e.target.value)} />
+      <input className="input" placeholder={t("common.phone")} value={phone} onChange={(e) => setPhone(e.target.value)} />
+      <input className="input" placeholder={t("common.address")} value={address} onChange={(e) => setAddress(e.target.value)} />
+      <input className="input sm:col-span-3" placeholder={t("common.noteOptional")} value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <button className="btn-primary sm:col-span-3" disabled={!name || !phone} onClick={() => create.mutate()}>{t("suppliers.save")}</button>
     </div>
   );
 }
@@ -115,6 +118,7 @@ function NewSupplierForm({ onDone }: { onDone: () => void }) {
 function SupplierProfile() {
   const { id } = useParams();
   const { isAdmin, user } = useAuth();
+  const { t, formatCurrency, formatDate, formatNumber, errorMessage, enumLabel } = useI18n();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data } = useQuery({ queryKey: ["supplier", id], queryFn: () => api.get(`/suppliers/${id}`).then((r) => r.data) });
@@ -127,7 +131,7 @@ function SupplierProfile() {
   const remove = useMutation({
     mutationFn: () => api.delete(`/suppliers/${id}`),
     onSuccess: () => navigate("/suppliers"),
-    onError: (e: any) => alert(e?.response?.data?.error ?? "Could not delete this supplier"),
+    onError: (error) => alert(errorMessage(error, "suppliers.deleteError")),
   });
 
   // Record payment (advance or installment)
@@ -145,7 +149,7 @@ function SupplierProfile() {
       qc.invalidateQueries({ queryKey: ["reports"] });
       setPayAmount(""); setPayNote(""); setPayError("");
     },
-    onError: (e: any) => setPayError(e?.response?.data?.error ?? "Failed to record payment"),
+    onError: (error) => setPayError(errorMessage(error, "suppliers.paymentError")),
   });
 
   // Send empty cylinders to supplier
@@ -160,7 +164,7 @@ function SupplierProfile() {
       qc.invalidateQueries({ queryKey: ["products"] });
       setSendQty(""); setSendNote(""); setSendError("");
     },
-    onError: (e: any) => setSendError(e?.response?.data?.error ?? "Failed to record send"),
+    onError: (error) => setSendError(errorMessage(error, "suppliers.sendError")),
   });
 
   // Receive from supplier (refill and/or new)
@@ -193,10 +197,10 @@ function SupplierProfile() {
       qc.invalidateQueries({ queryKey: ["accounts"] });
       setRecvRefillQty(""); setRecvNewQty(""); setRecvTotal(""); setRecvPaidNow(""); setRecvNote(""); setRecvError("");
     },
-    onError: (e: any) => setRecvError(e?.response?.data?.error ?? "Failed to record receipt"),
+    onError: (error) => setRecvError(errorMessage(error, "suppliers.receiptError")),
   });
 
-  if (!data) return <div>Loading...</div>;
+  if (!data) return <div>{t("common.loading")}</div>;
   const { supplier, cylinders_on_hold, receipts, payments } = data;
   const payableBalance = Number(supplier.current_payable_balance);
   const receiptsWithDue = receipts.filter((r: any) => Number(r.due_amount) > 0);
@@ -204,13 +208,13 @@ function SupplierProfile() {
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="flex justify-between items-center">
-        <Link to="/suppliers" className="text-sm text-brand-600 dark:text-brand-400">← Back to suppliers</Link>
+        <Link to="/suppliers" className="text-sm text-brand-600 dark:text-brand-400">{t("suppliers.back")}</Link>
         {isAdmin && (
           <button
             className="text-red-600 dark:text-red-400 text-sm"
-            onClick={() => { if (confirm(`Delete supplier "${supplier.name}"? This can't be undone.`)) remove.mutate(); }}
+            onClick={() => { if (confirm(t("suppliers.deleteConfirm", { name: supplier.name }))) remove.mutate(); }}
           >
-            Delete supplier
+            {t("suppliers.delete")}
           </button>
         )}
       </div>
@@ -220,29 +224,34 @@ function SupplierProfile() {
           <div className="text-sm text-gray-500 dark:text-slate-400">{supplier.phone} · {supplier.address}</div>
         </div>
         <div className="text-right">
-          <div className="text-xs text-gray-500 dark:text-slate-400">Payable balance</div>
+          <div className="text-xs text-gray-500 dark:text-slate-400">{t("suppliers.payableBalance")}</div>
           <div className={`num text-xl font-display font-semibold ${payableBalance > 0 ? "text-red-600 dark:text-red-400" : payableBalance < 0 ? "text-green-700 dark:text-green-400" : ""}`}>
-            {currency(payableBalance)}
+            {formatCurrency(payableBalance)}
           </div>
-          {payableBalance < 0 && <div className="text-xs text-gray-400 dark:text-slate-500">Prepaid credit</div>}
+          {payableBalance < 0 && <div className="text-xs text-gray-400 dark:text-slate-500">{t("suppliers.prepaidCredit")}</div>}
         </div>
       </div>
 
       {receiptsWithDue.length > 0 && (
         <div className="card border-red-200 dark:border-red-500/30 bg-red-50/40 dark:bg-red-500/[0.06]">
-          <div className="font-medium mb-2 text-red-800 dark:text-red-300">Why the payable balance is what it is</div>
+          <div className="font-medium mb-2 text-red-800 dark:text-red-300">{t("suppliers.whyPayable")}</div>
           <div className="space-y-3">
             {receiptsWithDue.map((r: any) => (
               <div key={r.id} className="bg-white dark:bg-slate-800 rounded-lg border border-red-100 dark:border-red-500/20 p-3 text-sm">
                 <div className="flex justify-between text-gray-500 dark:text-slate-400 text-xs mb-1">
-                  <span>{new Date(r.date).toLocaleDateString()} · recorded by {r.user?.name ?? "—"}</span>
-                  <span className="text-red-600 dark:text-red-400 font-medium">Due from this receipt: {currency(r.due_amount)}</span>
+                  <span>{formatDate(r.date)} · {t("suppliers.recordedBy", { name: r.user?.name ?? "—" })}</span>
+                  <span className="text-red-600 dark:text-red-400 font-medium">{t("suppliers.dueFromReceipt", { amount: formatCurrency(r.due_amount) })}</span>
                 </div>
                 <div className="text-gray-700 dark:text-slate-300">
-                  {r.refill_quantity > 0 && `${r.refill_quantity} refilled`}
-                  {r.refill_quantity > 0 && r.new_quantity > 0 && " + "}
-                  {r.new_quantity > 0 && `${r.new_quantity} new`}
-                  {" "}{r.product.category} ({r.product.size_variant}) — total {currency(r.total_amount)}, paid then {currency(r.paid_now_amount)}
+                  {t("suppliers.receiptTotals", {
+                    items: [
+                      r.refill_quantity > 0 ? t("suppliers.refilledCount", { count: formatNumber(r.refill_quantity) }) : "",
+                      r.new_quantity > 0 ? t("suppliers.newCount", { count: formatNumber(r.new_quantity) }) : ""
+                    ].filter(Boolean).join(" + "),
+                    product: `${r.product.category} (${r.product.size_variant})`,
+                    total: formatCurrency(r.total_amount),
+                    paid: formatCurrency(r.paid_now_amount)
+                  })}
                 </div>
               </div>
             ))}
@@ -251,40 +260,40 @@ function SupplierProfile() {
       )}
 
       <div className="card">
-        <div className="font-medium mb-3">Record payment (advance or installment)</div>
+        <div className="font-medium mb-3">{t("suppliers.recordPayment")}</div>
         {payError && <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-lg px-3 py-2 mb-3">{payError}</div>}
         <div className="flex gap-3 items-end flex-wrap">
           <div>
-            <label className="label">Amount</label>
+            <label className="label">{t("common.amount")}</label>
             <input className="input w-36" type="number" min={0} value={payAmount} onChange={(e) => setPayAmount(e.target.value === "" ? "" : Number(e.target.value))} />
           </div>
           <div>
-            <label className="label">Type</label>
+            <label className="label">{t("common.type")}</label>
             <select className="input" value={payType} onChange={(e) => setPayType(e.target.value as any)}>
-              <option value="INSTALLMENT">Installment (against due)</option>
-              <option value="ADVANCE">Advance (ahead of a receipt)</option>
+              <option value="INSTALLMENT">{t("suppliers.installmentDue")}</option>
+              <option value="ADVANCE">{t("suppliers.advanceReceipt")}</option>
             </select>
           </div>
           <div>
-            <label className="label">From account</label>
+            <label className="label">{t("suppliers.fromAccount")}</label>
             <select className="input" value={payAccount} onChange={(e) => setPayAccount(e.target.value)}>
-              <option value="">Select...</option>
+              <option value="">{t("common.select")}</option>
               {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
           <div className="flex-1 min-w-[10rem]">
-            <label className="label">Note (optional)</label>
+            <label className="label">{t("common.noteOptional")}</label>
             <input className="input" value={payNote} onChange={(e) => setPayNote(e.target.value)} />
           </div>
           <button className="btn-primary" disabled={!payAmount || Number(payAmount) <= 0 || !payAccount || recordPayment.isPending} onClick={() => recordPayment.mutate()}>
-            {recordPayment.isPending ? "Recording..." : "Record payment"}
+            {recordPayment.isPending ? t("common.recording") : t("customers.recordPayment")}
           </button>
         </div>
       </div>
 
       <div className="card">
-        <div className="font-medium mb-2">Cylinders currently on hold at this supplier</div>
-        {cylinders_on_hold.length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">None — nothing sent for refill right now.</div>}
+        <div className="font-medium mb-2">{t("suppliers.onHold")}</div>
+        {cylinders_on_hold.length === 0 && <div className="text-sm text-gray-400 dark:text-slate-500">{t("suppliers.nothingOnHold")}</div>}
         <ul className="text-sm space-y-1">
           {cylinders_on_hold.map((h: any) => (
             <li key={h.id}>{h.product.category} — {h.product.size_variant}: {h.quantity_with_supplier}</li>
@@ -294,94 +303,94 @@ function SupplierProfile() {
 
       <div className="grid lg:grid-cols-2 gap-4">
         <div className="card space-y-2">
-          <div className="font-medium text-sm">Send empty cylinders for refill</div>
+          <div className="font-medium text-sm">{t("suppliers.sendForRefill")}</div>
           {sendError && <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded px-2 py-1">{sendError}</div>}
           <select className="input" value={sendProduct} onChange={(e) => setSendProduct(e.target.value)}>
-            <option value="">Select product...</option>
+            <option value="">{t("common.selectProduct")}</option>
             {(products ?? []).filter((p: any) => p.is_returnable).map((p: any) => (
               <option key={p.id} value={p.id}>{p.category} — {p.size_variant}</option>
             ))}
           </select>
-          <input className="input" type="number" min={1} placeholder="Quantity sent" value={sendQty} onChange={(e) => setSendQty(e.target.value === "" ? "" : Number(e.target.value))} />
-          <input className="input" placeholder="Note (optional)" value={sendNote} onChange={(e) => setSendNote(e.target.value)} />
+          <input className="input" type="number" min={1} placeholder={t("suppliers.quantitySent")} value={sendQty} onChange={(e) => setSendQty(e.target.value === "" ? "" : Number(e.target.value))} />
+          <input className="input" placeholder={t("common.noteOptional")} value={sendNote} onChange={(e) => setSendNote(e.target.value)} />
           <button className="btn-primary w-full" disabled={!sendProduct || !sendQty || sendCylinders.isPending} onClick={() => sendCylinders.mutate()}>
-            {sendCylinders.isPending ? "Recording..." : "Send to supplier"}
+            {sendCylinders.isPending ? t("common.recording") : t("suppliers.send")}
           </button>
-          <p className="text-xs text-gray-400 dark:text-slate-500">Deducts stock now (the cylinders leave the premises empty) and adds to "on hold" above.</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">{t("suppliers.sendHelp")}</p>
         </div>
 
         <div className="card space-y-2">
-          <div className="font-medium text-sm">Receive from supplier</div>
+          <div className="font-medium text-sm">{t("suppliers.receive")}</div>
           {recvError && <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded px-2 py-1">{recvError}</div>}
           <select className="input" value={recvProduct} onChange={(e) => setRecvProduct(e.target.value)}>
-            <option value="">Select product...</option>
+            <option value="">{t("common.selectProduct")}</option>
             {(products ?? []).filter((p: any) => p.is_returnable).map((p: any) => (
               <option key={p.id} value={p.id}>{p.category} — {p.size_variant}</option>
             ))}
           </select>
           <div className="grid grid-cols-2 gap-2">
-            <input className="input" type="number" min={0} placeholder="Refilled qty" value={recvRefillQty} onChange={(e) => setRecvRefillQty(e.target.value === "" ? "" : Number(e.target.value))} />
-            <input className="input" type="number" min={0} placeholder="New qty" value={recvNewQty} onChange={(e) => setRecvNewQty(e.target.value === "" ? "" : Number(e.target.value))} />
+            <input className="input" type="number" min={0} placeholder={t("suppliers.refilledQty")} value={recvRefillQty} onChange={(e) => setRecvRefillQty(e.target.value === "" ? "" : Number(e.target.value))} />
+            <input className="input" type="number" min={0} placeholder={t("suppliers.newQty")} value={recvNewQty} onChange={(e) => setRecvNewQty(e.target.value === "" ? "" : Number(e.target.value))} />
           </div>
-          <input className="input" type="number" min={0} placeholder="Total amount charged" value={recvTotal} onChange={(e) => setRecvTotal(e.target.value === "" ? "" : Number(e.target.value))} />
+          <input className="input" type="number" min={0} placeholder={t("suppliers.totalCharged")} value={recvTotal} onChange={(e) => setRecvTotal(e.target.value === "" ? "" : Number(e.target.value))} />
           <div className="grid grid-cols-2 gap-2">
-            <input className="input" type="number" min={0} max={recvTotalNum} placeholder="Paid now" value={recvPaidNow} onChange={(e) => setRecvPaidNow(e.target.value === "" ? "" : Math.min(recvTotalNum, Number(e.target.value)))} />
+            <input className="input" type="number" min={0} max={recvTotalNum} placeholder={t("sales.paidNow")} value={recvPaidNow} onChange={(e) => setRecvPaidNow(e.target.value === "" ? "" : Math.min(recvTotalNum, Number(e.target.value)))} />
             <select className="input" value={recvAccount} onChange={(e) => setRecvAccount(e.target.value)} disabled={recvPaidNowNum === 0}>
-              <option value="">Paid from...</option>
+              <option value="">{t("suppliers.paidFrom")}</option>
               {(accounts ?? []).map((a: any) => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
           </div>
-          <div className="text-xs text-gray-500 dark:text-slate-400">Due (added to payable): {currency(recvDue)}</div>
-          <input className="input" placeholder="Note (optional)" value={recvNote} onChange={(e) => setRecvNote(e.target.value)} />
+          <div className="text-xs text-gray-500 dark:text-slate-400">{t("suppliers.dueAdded", { amount: formatCurrency(recvDue) })}</div>
+          <input className="input" placeholder={t("common.noteOptional")} value={recvNote} onChange={(e) => setRecvNote(e.target.value)} />
           <button
             className="btn-primary w-full"
             disabled={!recvProduct || (!recvRefillQty && !recvNewQty) || !recvTotal || (recvPaidNowNum > 0 && !recvAccount) || receiveFromSupplier.isPending}
             onClick={() => receiveFromSupplier.mutate()}
           >
-            {receiveFromSupplier.isPending ? "Recording..." : "Record receipt"}
+            {receiveFromSupplier.isPending ? t("common.recording") : t("suppliers.recordReceipt")}
           </button>
-          <p className="text-xs text-gray-400 dark:text-slate-500">Both refilled and new cylinders add to stock; only the refilled portion clears "on hold" above.</p>
+          <p className="text-xs text-gray-400 dark:text-slate-500">{t("suppliers.receiveHelp")}</p>
         </div>
       </div>
 
       <div className="card">
-        <div className="font-medium mb-2">Receipt history</div>
+        <div className="font-medium mb-2">{t("suppliers.receiptHistory")}</div>
         <div className="table-scroll">
         <table className="table-base">
-          <thead><tr><th>Date</th><th>Refilled</th><th>New</th><th>Total</th><th>Paid</th><th>Due</th></tr></thead>
+          <thead><tr><th>{t("common.date")}</th><th>{t("suppliers.refilled")}</th><th>{t("common.new")}</th><th>{t("common.total")}</th><th>{t("common.paid")}</th><th>{t("common.due")}</th></tr></thead>
           <tbody>
             {receipts.map((r: any) => (
               <tr key={r.id}>
-                <td>{new Date(r.date).toLocaleDateString()}</td>
+                <td>{formatDate(r.date)}</td>
                 <td>{r.refill_quantity || "—"}</td>
                 <td>{r.new_quantity || "—"}</td>
-                <td>{currency(r.total_amount)}</td>
-                <td>{currency(r.paid_now_amount)}</td>
-                <td className={Number(r.due_amount) > 0 ? "text-red-600 dark:text-red-400" : ""}>{currency(r.due_amount)}</td>
+                <td>{formatCurrency(r.total_amount)}</td>
+                <td>{formatCurrency(r.paid_now_amount)}</td>
+                <td className={Number(r.due_amount) > 0 ? "text-red-600 dark:text-red-400" : ""}>{formatCurrency(r.due_amount)}</td>
               </tr>
             ))}
-            {receipts.length === 0 && <tr><td colSpan={6} className="text-center text-gray-400 dark:text-slate-500 py-4">No receipts yet.</td></tr>}
+            {receipts.length === 0 && <tr><td colSpan={6} className="text-center text-gray-400 dark:text-slate-500 py-4">{t("suppliers.noReceipts")}</td></tr>}
           </tbody>
         </table>
         </div>
       </div>
 
       <div className="card">
-        <div className="font-medium mb-2">Payment history</div>
+        <div className="font-medium mb-2">{t("suppliers.paymentHistory")}</div>
         <div className="table-scroll">
         <table className="table-base">
-          <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Account</th><th>Recorded by</th></tr></thead>
+          <thead><tr><th>{t("common.date")}</th><th>{t("common.type")}</th><th>{t("common.amount")}</th><th>{t("common.account")}</th><th>{t("common.recordedBy")}</th></tr></thead>
           <tbody>
             {payments.map((p: any) => (
               <tr key={p.id}>
-                <td>{new Date(p.date).toLocaleDateString()}</td>
-                <td>{p.type === "ADVANCE" ? "Advance" : "Installment"}</td>
-                <td className="text-green-700 dark:text-green-400 font-medium">{currency(p.amount)}</td>
+                <td>{formatDate(p.date)}</td>
+                <td>{enumLabel(p.type)}</td>
+                <td className="text-green-700 dark:text-green-400 font-medium">{formatCurrency(p.amount)}</td>
                 <td>{p.paid_from_account?.name ?? "—"}</td>
                 <td>{p.user?.name ?? "—"}</td>
               </tr>
             ))}
-            {payments.length === 0 && <tr><td colSpan={5} className="text-center text-gray-400 dark:text-slate-500 py-4">No payments recorded yet.</td></tr>}
+            {payments.length === 0 && <tr><td colSpan={5} className="text-center text-gray-400 dark:text-slate-500 py-4">{t("suppliers.noPayments")}</td></tr>}
           </tbody>
         </table>
         </div>

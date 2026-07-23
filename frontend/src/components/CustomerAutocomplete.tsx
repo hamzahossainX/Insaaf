@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../api/client";
+import { useI18n } from "../lib/i18n";
 
 interface Customer {
   id: string;
@@ -12,12 +13,13 @@ interface Customer {
 export default function CustomerAutocomplete({
   value,
   onChange,
-  placeholder = "Type customer name or phone...",
+  placeholder,
 }: {
   value: string; // selected customer_id
   onChange: (customerId: string, customer: Customer | null) => void;
   placeholder?: string;
 }) {
+  const { t } = useI18n();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState("");
@@ -53,7 +55,7 @@ export default function CustomerAutocomplete({
     <div className="relative" ref={boxRef}>
       <input
         className="input"
-        placeholder={placeholder}
+        placeholder={placeholder ?? t("autocomplete.placeholder")}
         value={open || query ? query : selectedLabel}
         onFocus={() => setOpen(true)}
         onChange={(e) => {
@@ -65,7 +67,7 @@ export default function CustomerAutocomplete({
       {open && query.length > 0 && (
         <div className="absolute z-10 mt-1 w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg max-h-56 overflow-y-auto">
           {(results ?? []).length === 0 && (
-            <div className="px-3 py-2 text-sm text-gray-400 dark:text-slate-500">No customers match "{query}"</div>
+            <div className="px-3 py-2 text-sm text-gray-400 dark:text-slate-500">{t("autocomplete.noMatches", { query })}</div>
           )}
           {(results ?? []).map((c: Customer) => (
             <button
@@ -76,7 +78,7 @@ export default function CustomerAutocomplete({
             >
               <span>{c.name} <span className="text-gray-400 dark:text-slate-500">· {c.phone}</span></span>
               {Number(c.current_due_balance) > 0 && (
-                <span className="text-xs text-red-600 dark:text-red-400">due</span>
+                <span className="text-xs text-red-600 dark:text-red-400">{t("autocomplete.due")}</span>
               )}
             </button>
           ))}
