@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 html { -webkit-text-size-adjust: 100%; }
+.lang-bn body { font-family: "Noto Sans Bengali", "Inter", ui-sans-serif, system-ui, sans-serif; }
+.lang-bn h1, .lang-bn h2, .lang-bn h3, .lang-bn .font-display {
+  font-family: "Noto Sans Bengali", "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+}
 
 /* Tells the browser which palette to use for native UI it renders itself —
    select dropdown lists, date/number pickers, checkboxes, scrollbars — so they

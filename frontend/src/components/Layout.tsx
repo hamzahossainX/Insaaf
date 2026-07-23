@@ -22,25 +22,28 @@ import {
 } from "lucide-react";
 import { useAuth } from "../lib/auth";
 import { useTheme } from "../lib/theme";
+import { useI18n } from "../lib/i18n";
+import LanguageSelector from "./LanguageSelector";
 
 const navItems = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/sales/new", label: "New Sale", icon: ShoppingCart },
-  { to: "/cylinder-returns", label: "Cylinder Returns", icon: PackageOpen },
-  { to: "/customers", label: "Customers", icon: Users },
-  { to: "/suppliers", label: "Suppliers", icon: Truck },
-  { to: "/products", label: "Products & Stock", icon: Boxes },
-  { to: "/accounts", label: "Accounts", icon: Wallet },
-  { to: "/expenses", label: "Expenses", icon: Receipt },
-  { to: "/payroll", label: "Employees & Payroll", icon: UserCog },
-  { to: "/reports", label: "Reports", icon: BarChart3 },
-  { to: "/change-password", label: "Change Password", icon: KeyRound },
-  { to: "/settings", label: "Settings", icon: SettingsIcon },
+  { to: "/", labelKey: "nav.dashboard", icon: LayoutDashboard },
+  { to: "/sales/new", labelKey: "nav.newSale", icon: ShoppingCart },
+  { to: "/cylinder-returns", labelKey: "nav.cylinderReturns", icon: PackageOpen },
+  { to: "/customers", labelKey: "nav.customers", icon: Users },
+  { to: "/suppliers", labelKey: "nav.suppliers", icon: Truck },
+  { to: "/products", labelKey: "nav.products", icon: Boxes },
+  { to: "/accounts", labelKey: "nav.accounts", icon: Wallet },
+  { to: "/expenses", labelKey: "nav.expenses", icon: Receipt },
+  { to: "/payroll", labelKey: "nav.payroll", icon: UserCog },
+  { to: "/reports", labelKey: "nav.reports", icon: BarChart3 },
+  { to: "/change-password", labelKey: "nav.changePassword", icon: KeyRound },
+  { to: "/settings", labelKey: "nav.settings", icon: SettingsIcon },
 ];
 
 export default function Layout() {
   const { user, isAdmin, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -54,7 +57,7 @@ export default function Layout() {
         <button
           className="p-2 -ml-2 rounded-lg text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
           onClick={() => setMobileOpen(true)}
-          aria-label="Open menu"
+          aria-label={t("nav.openMenu")}
         >
           <Menu size={22} />
         </button>
@@ -62,15 +65,18 @@ export default function Layout() {
           <span className="w-6 h-6 rounded-md bg-brand-gradient flex items-center justify-center text-white">
             <Flame size={13} strokeWidth={2.5} />
           </span>
-          Insaaf ERP
+          <span className="hidden sm:inline">{t("app.name")}</span>
         </div>
-        <button
-          className="p-2 -mr-2 rounded-lg text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-        >
-          {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+        <div className="flex items-center gap-1.5">
+          <LanguageSelector compact />
+          <button
+            className="p-2 -mr-2 rounded-lg text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800"
+            onClick={toggleTheme}
+            aria-label={t("nav.toggleTheme")}
+          >
+            {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
       </header>
 
       {/* Mobile drawer backdrop */}
@@ -96,14 +102,14 @@ export default function Layout() {
               <Flame size={16} strokeWidth={2.5} />
             </span>
             <div className="min-w-0">
-              <div className="font-display font-semibold text-gray-900 dark:text-slate-100 text-[15px] leading-tight truncate">Insaaf ERP</div>
-              <div className="text-xs text-gray-400 dark:text-slate-500 leading-tight">Oxygen Wing</div>
+              <div className="font-display font-semibold text-gray-900 dark:text-slate-100 text-[15px] leading-tight truncate">{t("app.name")}</div>
+              <div className="text-xs text-gray-400 dark:text-slate-500 leading-tight">{t("app.wing")}</div>
             </div>
           </div>
           <button
             className="lg:hidden p-1.5 rounded-lg text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
             onClick={() => setMobileOpen(false)}
-            aria-label="Close menu"
+            aria-label={t("nav.closeMenu")}
           >
             <X size={20} />
           </button>
@@ -132,7 +138,7 @@ export default function Layout() {
                       <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-brand-gradient" />
                     )}
                     <Icon size={17} strokeWidth={2} className="shrink-0" />
-                    <span className="truncate">{item.label}</span>
+                    <span className="truncate">{t(item.labelKey)}</span>
                   </>
                 )}
               </NavLink>
@@ -141,12 +147,13 @@ export default function Layout() {
         </nav>
 
         <div className="px-2.5 py-3 border-t border-gray-100 dark:border-slate-800 space-y-2">
+          <LanguageSelector />
           <button
             className="hidden lg:flex w-full items-center gap-3 pl-3.5 pr-3 py-2 rounded-lg text-[13.5px] text-gray-600 hover:bg-gray-100 dark:text-slate-400 dark:hover:bg-slate-800/70 dark:hover:text-slate-200"
             onClick={toggleTheme}
           >
             {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
-            {theme === "dark" ? "Light mode" : "Dark mode"}
+            {theme === "dark" ? t("nav.lightMode") : t("nav.darkMode")}
           </button>
           <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 dark:bg-slate-800/50">
             <span className="w-7 h-7 rounded-full bg-brand-gradient text-white text-xs font-semibold flex items-center justify-center shrink-0">
@@ -154,7 +161,7 @@ export default function Layout() {
             </span>
             <div className="min-w-0">
               <div className="text-sm font-medium text-gray-900 dark:text-slate-100 truncate leading-tight">{user?.name}</div>
-              <div className="text-xs text-gray-400 dark:text-slate-500 leading-tight">{user?.role === "ADMIN" ? "Admin" : "Member"}</div>
+              <div className="text-xs text-gray-400 dark:text-slate-500 leading-tight">{user?.role === "ADMIN" ? t("common.admin") : t("common.member")}</div>
             </div>
           </div>
           <button
@@ -165,7 +172,7 @@ export default function Layout() {
             }}
           >
             <LogOut size={17} />
-            Log out
+            {t("nav.logout")}
           </button>
         </div>
       </aside>

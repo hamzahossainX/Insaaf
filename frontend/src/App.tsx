@@ -14,10 +14,18 @@ import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
+import { useI18n } from "./lib/i18n";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user, checkingSession } = useAuth();
-  if (checkingSession) return null; // brief check against the backend before trusting a stored session
+  const { t } = useI18n();
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-sm text-gray-500 dark:bg-slate-950 dark:text-slate-400">
+        {t("common.loading")}
+      </div>
+    );
+  }
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }
